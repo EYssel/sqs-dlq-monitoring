@@ -1,27 +1,30 @@
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
-export interface IMonitoredQueueProps extends Omit<QueueProps, 'deadLetterQueue'> {
-  maxReceiveCount?: number;
-  dlqQueueName?: string;
+export interface MonitoredQueueProps {
+  readonly queueProps: QueueProps;
+  readonly messageThreshold?: number;
 }
 
-export class MonitoredQueue extends Queue {
-  constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
+export class MonitoredQueue extends Construct {
+  constructor(scope: Construct, id: string, props: MonitoredQueueProps) {
     super(scope, id);
 
-    const { maxReceiveCount, dlqQueueName } = props;
+    // if no deadLetterQueue add default
+    const deadLetterQueue = props.queueProps.deadLetterQueue
+      ? props.queueProps.deadLetterQueue
+      : {
+        queue: new Queue(this, 'DeadLetterQueue', {
+          queueName: `${props.queueProps.queueName}-dlq`,
+        }),
+        maxReceiveCount: 3,
+      };
 
-    const dlq = new Queue(scope, 'DLQ', {
-      queueName: dlqQueueName || `${this.queueName}-dlq`,
+    new Queue(this, 'Queue', {
+      ...props.queueProps,
+      deadLetterQueue,
     });
 
-    new Queue(scope, id, {
-      ...props,
-      deadLetterQueue: {
-        maxReceiveCount: maxReceiveCount || 5,
-        queue: dlq,
-      },
-    });
+
   }
 }
