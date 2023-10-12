@@ -1,13 +1,13 @@
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
-export interface MonitoredQueueProps extends Omit<QueueProps, 'deadLetterQueue'> {
+export interface IMonitoredQueueProps extends Omit<QueueProps, 'deadLetterQueue'> {
   maxReceiveCount?: number;
   dlqQueueName?: string;
 }
 
 export class MonitoredQueue extends Queue {
-  constructor(scope: Construct, id: string, props: MonitoredQueueProps) {
+  constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
     super(scope, id);
 
     const { maxReceiveCount, dlqQueueName } = props;
