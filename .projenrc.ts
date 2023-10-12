@@ -8,6 +8,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   name: 'sqs-dlq-monitoring',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/EYssel/sqs-dlq-monitoring.git',
+  docgen: false,
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
