@@ -5,7 +5,7 @@ import { MonitoredQueue } from '../src/index';
 describe('MonitoredDLQueue', () => {
   test('should create a monitored queue', () => {
     const stack = new Stack();
-    const queue = new MonitoredQueue(stack, 'test', {
+    new MonitoredQueue(stack, 'test', {
       queueProps: {
         queueName: 'test',
       },
