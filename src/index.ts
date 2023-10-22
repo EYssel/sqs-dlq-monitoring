@@ -2,7 +2,9 @@ import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
 export interface MonitoredQueueProps {
+  /** The properties of the SQS Queue Construct */
   readonly queueProps: QueueProps;
+  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
 }
 
