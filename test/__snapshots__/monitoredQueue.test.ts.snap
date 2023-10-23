@@ -10,6 +10,29 @@ exports[`MonitoredQueue should create a monitored queue 1`] = `
     },
   },
   "Resources": {
+    "testDLQAlarmFF94B263": {
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "testDeadLetterQueueA5F7D72D",
+                "QueueName",
+              ],
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 5,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
     "testDeadLetterQueueA5F7D72D": {
       "DeletionPolicy": "Delete",
       "Properties": {

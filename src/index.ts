@@ -1,8 +1,11 @@
+import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
 export interface MonitoredQueueProps {
+  /** The properties of the SQS Queue Construct */
   readonly queueProps: QueueProps;
+  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
 }
 
@@ -10,7 +13,6 @@ export class MonitoredQueue extends Construct {
   constructor(scope: Construct, id: string, props: MonitoredQueueProps) {
     super(scope, id);
 
-    // if no deadLetterQueue add default
     const deadLetterQueue = props.queueProps.deadLetterQueue
       ? props.queueProps.deadLetterQueue
       : {
@@ -25,6 +27,10 @@ export class MonitoredQueue extends Construct {
       deadLetterQueue,
     });
 
-
+    new Alarm(this, 'DLQ-Alarm', {
+      metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
+      threshold: props.messageThreshold || 5,
+      evaluationPeriods: 1,
+    });
   }
 }
