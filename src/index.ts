@@ -1,4 +1,6 @@
-import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
+import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
@@ -27,10 +29,19 @@ export class MonitoredQueue extends Construct {
       deadLetterQueue,
     });
 
-    new Alarm(this, 'DLQ-Alarm', {
+    const alarm = new Alarm(this, 'DLQ-Alarm', {
       metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
       threshold: props.messageThreshold || 5,
       evaluationPeriods: 1,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
     });
+
+    const topic = new Topic(this, 'Topic', {
+      topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
+    });
+
+    const snsAction = new SnsAction(topic);
+
+    alarm.addAlarmAction(snsAction);
   }
 }
