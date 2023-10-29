@@ -10,7 +10,7 @@ export interface MonitoredQueueProps {
   readonly queueProps: QueueProps;
   /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
-  /** The destinations to which the messages should be sent */
+  /** The emails to which the messages should be sent */
   readonly emails?: string[];
 }
 
