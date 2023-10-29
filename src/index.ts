@@ -5,24 +5,13 @@ import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
-interface EmailNotificationDestination extends NotificationDestination {
-  /** The emails to which notifications will to be sent to (An email subscription request will be sent to each email) */
-  readonly emails: string[];
-}
-
-interface NotificationDestination {}
-
-enum NotificationDestinationType {
-  email = 'EmailNotificationDestination',
-}
-
 export interface MonitoredQueueProps {
   /** The properties of the SQS Queue Construct */
   readonly queueProps: QueueProps;
   /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
-  /** */
-  readonly notificationDestinations?: NotificationDestination[];
+  /** The destinations to which the messages should be sent */
+  readonly emails?: string[];
 }
 
 export class MonitoredQueue extends Construct {
@@ -58,69 +47,14 @@ export class MonitoredQueue extends Construct {
 
     alarm.addAlarmAction(snsAction);
 
-    props.notificationDestinations
-      ? this.addNotificationDestinations(topic, props.notificationDestinations)
+    props.emails
+      ? this.addEmailNotificationDestination(topic, props.emails)
       : {};
   }
 
-  addNotificationDestinations(
-    topic: Topic,
-    notificationDestinations: NotificationDestination[],
-  ) {
-    if (notificationDestinations.length === 0) {
-      return;
+  addEmailNotificationDestination(topic: Topic, emails: string[]) {
+    for (const email of emails) {
+      topic.addSubscription(new EmailSubscription(email));
     }
-
-    for (const notificationDestination of notificationDestinations) {
-      const notificationDestinationType = getNotificationDestinationType(
-        notificationDestination,
-      );
-
-      if (!notificationDestinationType) {
-        throw new Error(
-          'Notification destination type not supported. Please check the documentation for supported notification destinations.',
-        );
-      }
-
-      this.addNotificationDestination(
-        topic,
-        notificationDestination,
-        notificationDestinationType,
-      );
-    }
-  }
-
-  addNotificationDestination(
-    topic: Topic,
-    notificationDestination: NotificationDestination,
-    notificationDestinationType: NotificationDestinationType,
-  ) {
-    switch (notificationDestinationType) {
-      case NotificationDestinationType.email:
-        addEmailNotificationDestination(
-          topic,
-          notificationDestination as EmailNotificationDestination,
-        );
-        break;
-    }
-  }
-}
-
-function getNotificationDestinationType(
-  notificationDestination: NotificationDestination,
-) {
-  if ('emails' in notificationDestination) {
-    return NotificationDestinationType.email;
-  }
-
-  return null;
-}
-
-function addEmailNotificationDestination(
-  topic: Topic,
-  notificationDestination: EmailNotificationDestination,
-) {
-  for (const email of notificationDestination.emails) {
-    topic.addSubscription(new EmailSubscription(email));
   }
 }

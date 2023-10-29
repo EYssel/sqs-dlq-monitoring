@@ -21,11 +21,7 @@ describe('MonitoredQueue', () => {
       queueProps: {
         queueName: 'test',
       },
-      notificationDestinations: [
-        {
-          emails: ['testemail@test.com'],
-        },
-      ],
+      emails: ['testemail@test.com'],
     });
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
