@@ -1,6 +1,7 @@
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
@@ -9,6 +10,8 @@ export interface MonitoredQueueProps {
   readonly queueProps: QueueProps;
   /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
+  /** The emails to which the messages should be sent */
+  readonly emails?: string[];
 }
 
 export class MonitoredQueue extends Construct {
@@ -43,5 +46,15 @@ export class MonitoredQueue extends Construct {
     const snsAction = new SnsAction(topic);
 
     alarm.addAlarmAction(snsAction);
+
+    props.emails
+      ? this.addEmailNotificationDestination(topic, props.emails)
+      : {};
+  }
+
+  addEmailNotificationDestination(topic: Topic, emails: string[]) {
+    for (const email of emails) {
+      topic.addSubscription(new EmailSubscription(email));
+    }
   }
 }

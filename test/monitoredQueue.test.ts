@@ -14,4 +14,16 @@ describe('MonitoredQueue', () => {
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
   });
+
+  test('should create a monitored queue with an email subscription', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      emails: ['testemail@test.com'],
+    });
+    const template = Template.fromStack(stack);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
 });
