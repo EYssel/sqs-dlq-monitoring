@@ -46,6 +46,7 @@ export class MonitoredQueue extends Construct {
     const snsAction = new SnsAction(topic);
 
     alarm.addAlarmAction(snsAction);
+    alarm.addOkAction(snsAction);
 
     props.emails
       ? this.addEmailNotificationDestination(topic, props.emails)
