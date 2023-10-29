@@ -32,6 +32,11 @@ exports[`MonitoredQueue should create a monitored queue 1`] = `
         "EvaluationPeriods": 1,
         "MetricName": "ApproximateNumberOfMessagesVisible",
         "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
         "Period": 300,
         "Statistic": "Maximum",
         "Threshold": 5,
@@ -146,6 +151,11 @@ exports[`MonitoredQueue should create a monitored queue with an email subscripti
         "EvaluationPeriods": 1,
         "MetricName": "ApproximateNumberOfMessagesVisible",
         "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
         "Period": 300,
         "Statistic": "Maximum",
         "Threshold": 5,
