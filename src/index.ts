@@ -14,6 +14,8 @@ export interface IMonitoredQueueProps {
   readonly queueProps: QueueProps;
   /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
   readonly messageThreshold?: number;
+  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
+  readonly evaluationThreshold?: number;
   /** The emails to which the messages should be sent */
   readonly emails?: string[];
   /** Slack bot token */
@@ -43,7 +45,7 @@ export class MonitoredQueue extends Construct {
     const alarm = new Alarm(this, 'DLQ-Alarm', {
       metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
       threshold: props.messageThreshold || 5,
-      evaluationPeriods: 1,
+      evaluationPeriods: props.evaluationThreshold || 1,
       treatMissingData: TreatMissingData.NOT_BREACHING,
     });
 
@@ -80,17 +82,13 @@ export class MonitoredQueue extends Construct {
     slackToken: string,
     slackChannel: string,
   ) {
-    const slackListener = new NodejsFunction(
-      this,
-      'SlackNotificationLambda',
-      {
-        entry: 'src/lambda/slackListener.ts',
-        environment: {
-          SLACK_BOT_TOKEN: slackToken,
-          SLACK_CHANNEL: slackChannel,
-        },
+    const slackListener = new NodejsFunction(this, 'SlackNotificationLambda', {
+      entry: 'src/lambda/slackListener.ts',
+      environment: {
+        SLACK_BOT_TOKEN: slackToken,
+        SLACK_CHANNEL: slackChannel,
       },
-    );
+    });
 
     topic.addSubscription(new LambdaSubscription(slackListener));
   }
