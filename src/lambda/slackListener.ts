@@ -1,9 +1,9 @@
 import { WebClient } from '@slack/web-api';
-import { SNSHandler } from 'aws-lambda';
+import { SNSEvent, SNSHandler } from 'aws-lambda';
 
 const slackWebClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-export const handler: SNSHandler = async (event) => {
+export const handler: SNSHandler = async (event: SNSEvent) => {
   try {
     const message = JSON.parse(event.Records[0].Sns.Message);
     await slackWebClient.chat.postMessage({
