@@ -83,7 +83,7 @@ export class MonitoredQueue extends Construct {
     slackChannel: string,
   ) {
     const slackListener = new NodejsFunction(this, 'SlackNotificationLambda', {
-      entry: 'src/lambda/slackListener.ts',
+      entry: `${__dirname}/lambda/slackListener.ts`,
       environment: {
         SLACK_BOT_TOKEN: slackToken,
         SLACK_CHANNEL: slackChannel,
