@@ -84,7 +84,7 @@ export class MonitoredQueue extends Construct {
   ) {
     const slackListener = new Function(this, 'SlackNotificationLambda', {
       runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset(`lib/lambda/slackListener`),
+      code: Code.fromAsset('lib/lambda/slackListener'),
       handler: 'handler.handler',
       environment: {
         SLACK_BOT_TOKEN: slackToken,
