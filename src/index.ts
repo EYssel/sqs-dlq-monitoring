@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -9,6 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 export interface IMonitoredQueueProps {
   /** The properties of the SQS Queue Construct */
@@ -84,7 +84,7 @@ export class MonitoredQueue extends Construct {
     slackChannel: string,
   ) {
     const slackListener = new Function(this, 'SlackNotificationLambda', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
       handler: 'index.handler',
       environment: {
