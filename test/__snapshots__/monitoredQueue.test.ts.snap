@@ -340,7 +340,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             "SLACK_CHANNEL": "test",
           },
         },
-        "Handler": "handler.handler",
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "testSlackNotificationLambdaServiceRole5E2AB417",
