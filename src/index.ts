@@ -8,6 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 export interface IMonitoredQueueProps {
   /** The properties of the SQS Queue Construct */
@@ -84,7 +85,7 @@ export class MonitoredQueue extends Construct {
   ) {
     const slackListener = new Function(this, 'SlackNotificationLambda', {
       runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset('lib/lambda/slackListener'),
+      code: Code.fromAsset(path.join(__dirname, `lib/lambda/slackListener`)),
       handler: 'handler.handler',
       environment: {
         SLACK_BOT_TOKEN: slackToken,
