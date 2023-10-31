@@ -1,6 +1,6 @@
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
@@ -82,8 +82,10 @@ export class MonitoredQueue extends Construct {
     slackToken: string,
     slackChannel: string,
   ) {
-    const slackListener = new NodejsFunction(this, 'SlackNotificationLambda', {
-      entry: `${__dirname}/lambda/slackListener.ts`,
+    const slackListener = new Function(this, 'SlackNotificationLambda', {
+      runtime: Runtime.NODEJS_14_X,
+      code: Code.fromAsset(`${__dirname}/lambda/slackListener`),
+      handler: 'handler.handler',
       environment: {
         SLACK_BOT_TOKEN: slackToken,
         SLACK_CHANNEL: slackChannel,

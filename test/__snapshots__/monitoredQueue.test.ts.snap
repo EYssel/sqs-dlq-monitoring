@@ -332,16 +332,15 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "ec91812fb17547fef21b6502b0464674daf2bb74137a203046233bf1b93dcddb.zip",
+          "S3Key": "8dbc1a2d8e4a70f0a5138dd71e0cb4cd70a23f4aba9e7dc6d31040317673ddbf.zip",
         },
         "Environment": {
           "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "SLACK_BOT_TOKEN": "test",
             "SLACK_CHANNEL": "test",
           },
         },
-        "Handler": "index.handler",
+        "Handler": "handler.handler",
         "Role": {
           "Fn::GetAtt": [
             "testSlackNotificationLambdaServiceRole5E2AB417",
