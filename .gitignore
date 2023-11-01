@@ -49,3 +49,4 @@ junit.xml
 !/.eslintrc.json
 .jsii
 tsconfig.json
+playground/
