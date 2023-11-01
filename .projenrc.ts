@@ -16,12 +16,17 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   // deps: [],                    /* Runtime dependencies of this module. */,
   // description: undefined,      /* The description is just a string that helps people understand the purpose of the package. */
-  devDeps: ['@types/aws-lambda', 'esbuild'] /* Build dependencies for this module. */,
+  devDeps: [
+    '@types/aws-lambda',
+    'esbuild',
+  ] /* Build dependencies for this module. */,
   // packageName: undefined,      /* The "name" in package.json. */
   bundledDeps: ['aws-lambda', '@slack/web-api'],
   // exclude lambda code in favour of custom esbuild compiling
-  excludeTypescript: ['src/lambda/**/*'],
+  excludeTypescript: ['src/lambda/**/*', 'playground/**/*'],
 });
-project.npmignore!.exclude('scripts');
+project.npmignore!.exclude('scripts/');
+project.npmignore!.exclude('playground/');
+project.gitignore!.exclude('playground/');
 project.compileTask.exec('ts-node ./scripts/buildLambdas.ts');
 project.synth();
