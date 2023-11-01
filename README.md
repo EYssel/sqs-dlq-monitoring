@@ -1,7 +1,20 @@
 # sqs-dlq-monitoring
 An AWS CDK construct to wrap AWS Simple-Queue Service (SQS) Dead-Letter Queues with a CloudWatch alarm to notify if the number of messages cross a certain threshold.
 
-# Setting up a Slack Bot
+The following integrations are available:
+
+- Email
+- Slack
+
+More coming soon!
+
+# Setting up an Email notification
+
+A list of emails can be provided to the `emails` parameter. 
+
+Please note that a subscription request will be sent out to each email which needs to be accepted. Be sure to check you Spam folder as well.
+
+# Setting up a Slack notification
 When using the construct the following parameters are available for setting up a Slack notification
 
 `slackToken`
