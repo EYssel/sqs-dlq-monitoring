@@ -1,9 +1,9 @@
-import { SNSEvent, SNSHandler } from "aws-lambda";
-import axios from "axios";
-import { AlarmMessage } from "../alarmMessage";
+import { SNSEvent, SNSHandler } from 'aws-lambda';
+import axios from 'axios';
+import { AlarmMessage } from '../alarmMessage';
 
 const SLACK_CHAT_POST_MESSAGE_ENDPOINT =
-  "https://slack.com/api/chat.postMessage";
+  'https://slack.com/api/chat.postMessage';
 
 export const handler: SNSHandler = async (event: SNSEvent) => {
   try {
@@ -13,14 +13,14 @@ export const handler: SNSHandler = async (event: SNSEvent) => {
       SLACK_CHAT_POST_MESSAGE_ENDPOINT,
       {
         channel: process.env.SLACK_CHANNEL,
-        text: getTextMessage(message)
+        text: getTextMessage(message),
       },
       {
         headers: {
-          ContentType: "application/json",
+          ContentType: 'application/json',
           Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
         },
-      }
+      },
     );
 
   } catch (error) {
