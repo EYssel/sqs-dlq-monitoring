@@ -11,7 +11,10 @@ export const handler: SNSHandler = async (event: SNSEvent) => {
 
     await axios.post(
       SLACK_CHAT_POST_MESSAGE_ENDPOINT,
-      getTextMessage(message),
+      {
+        channel: process.env.SLACK_CHANNEL,
+        text: getTextMessage(message)
+      },
       {
         headers: {
           ContentType: "application/json",
