@@ -1,17 +1,25 @@
-import { WebClient } from '@slack/web-api';
-import { SNSEvent, SNSHandler } from 'aws-lambda';
-import { AlarmMessage } from '../alarmMessage';
+import { SNSEvent, SNSHandler } from "aws-lambda";
+import axios from "axios";
+import { AlarmMessage } from "../alarmMessage";
 
-const slackWebClient = new WebClient(process.env.SLACK_BOT_TOKEN);
+const SLACK_CHAT_POST_MESSAGE_ENDPOINT =
+  "https://slack.com/api/chat.postMessage";
 
 export const handler: SNSHandler = async (event: SNSEvent) => {
   try {
     const message: AlarmMessage = JSON.parse(event.Records[0].Sns.Message);
 
-    await slackWebClient.chat.postMessage({
-      text: getTextMessage(message),
-      channel: process.env.SLACK_CHANNEL as string,
-    });
+    await axios.post(
+      SLACK_CHAT_POST_MESSAGE_ENDPOINT,
+      getTextMessage(message),
+      {
+        headers: {
+          ContentType: "application/json",
+          Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
+        },
+      }
+    );
+
   } catch (error) {
     console.error(error);
   }
