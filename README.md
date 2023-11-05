@@ -8,6 +8,20 @@ The following integrations are available:
 
 More coming soon!
 
+# Deployed Infrastructure
+
+To support this construct the following infrastucture is deployed:
+
+- SQS Queue
+- SQS DLQ
+- SNS Topic
+- CloudWatch Alarm
+- Lambda Function
+
+A representation of the infrastructure can be seen below.
+
+![alt text](./documentation/infrastructure_diagram.png)
+
 # Setting up an Email notification
 
 A list of emails can be provided to the `emails` parameter. 
