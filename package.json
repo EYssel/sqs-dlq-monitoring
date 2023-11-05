@@ -63,12 +63,12 @@
     "constructs": "^10.0.5"
   },
   "dependencies": {
-    "@slack/web-api": "^6.9.1",
-    "aws-lambda": "^1.0.7"
+    "aws-lambda": "^1.0.7",
+    "axios": "^1.6.0"
   },
   "bundledDependencies": [
-    "@slack/web-api",
-    "aws-lambda"
+    "aws-lambda",
+    "axios"
   ],
   "keywords": [
     "cdk"

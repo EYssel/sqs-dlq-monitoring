@@ -21,7 +21,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'esbuild',
   ] /* Build dependencies for this module. */,
   // packageName: undefined,      /* The "name" in package.json. */
-  bundledDeps: ['aws-lambda', '@slack/web-api'],
+  bundledDeps: ['aws-lambda', 'axios'],
   // exclude lambda code in favour of custom esbuild compiling
   excludeTypescript: ['src/lambda/**/*', 'playground/**/*'],
 });

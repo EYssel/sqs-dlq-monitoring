@@ -98,11 +98,11 @@
       "type": "build"
     },
     {
-      "name": "@slack/web-api",
+      "name": "aws-lambda",
       "type": "bundled"
     },
     {
-      "name": "aws-lambda",
+      "name": "axios",
       "type": "bundled"
     },
     {
