@@ -33,7 +33,6 @@
     "organization": false
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.126",
     "@types/jest": "^29.5.7",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
@@ -63,11 +62,9 @@
     "constructs": "^10.0.5"
   },
   "dependencies": {
-    "aws-lambda": "^1.0.7",
     "axios": "^1.6.0"
   },
   "bundledDependencies": [
-    "aws-lambda",
     "axios"
   ],
   "keywords": [
