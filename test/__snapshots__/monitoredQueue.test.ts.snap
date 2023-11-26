@@ -17,6 +17,20 @@ exports[`MonitoredQueue should create a monitored queue 1`] = `
             "Ref": "testTopic20AA7407",
           },
         ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "Dimensions": [
           {
@@ -144,6 +158,20 @@ exports[`MonitoredQueue should create a monitored queue with a custom DLQ 1`] = 
             "Ref": "testTopic20AA7407",
           },
         ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "DLQ581697C4",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "Dimensions": [
           {
@@ -248,6 +276,85 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
     },
   },
   "Resources": {
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "5bc602ecde93c947efe5899ae355f999986a1acbe610b1c0b9c468d738857555.zip",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "testDLQAlarmFF94B263": {
       "Properties": {
         "AlarmActions": [
@@ -255,6 +362,20 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             "Ref": "testTopic20AA7407",
           },
         ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "Dimensions": [
           {
@@ -332,7 +453,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "6c681fa33fbb43d577f1856ef74d70103446099c38e8edb0050f96aeba690924.zip",
+          "S3Key": "f28977b4f47f136211b3e3791f163fa3cef33786dc1f88f323bd6748fd9aa77a.zip",
         },
         "Environment": {
           "Variables": {
@@ -350,6 +471,29 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         "Runtime": "nodejs18.x",
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "testSlackNotificationLambdaLogRetention50573FD2": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "testSlackNotificationLambdaF8C3E91E",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 7,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
     },
     "testSlackNotificationLambdaServiceRole5E2AB417": {
       "Properties": {
@@ -464,6 +608,20 @@ exports[`MonitoredQueue should create a monitored queue with an email subscripti
             "Ref": "testTopic20AA7407",
           },
         ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "Dimensions": [
           {

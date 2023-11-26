@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -8,7 +9,6 @@ import {
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import * as path from 'path';
 
 export interface IMonitoredQueueProps {
   /** The properties of the SQS Queue Construct */
@@ -44,6 +44,7 @@ export class MonitoredQueue extends Construct {
     });
 
     const alarm = new Alarm(this, 'DLQ-Alarm', {
+      alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
       metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
       threshold: props.messageThreshold || 5,
       evaluationPeriods: props.evaluationThreshold || 1,

@@ -1,14 +1,16 @@
+type StateValue = 'ALARM' | 'OK' | 'INSUFFICIENT_DATA';
+
 export type AlarmMessage = {
   AlarmName: string;
   AlarmDescription: string;
   AWSAccountId: string;
   AlarmConfigurationUpdatedTimestamp: string;
-  NewStateValue: string;
+  NewStateValue: StateValue;
   NewStateReason: string;
   StateChangeTime: string;
   Region: string;
   AlarmArn: string;
-  OldStateValue: string;
+  OldStateValue: StateValue;
   OKActions: string[];
   AlarmActions: string[];
   InsufficientDataActions: string[];
