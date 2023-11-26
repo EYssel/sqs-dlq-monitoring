@@ -44,6 +44,7 @@ export class MonitoredQueue extends Construct {
     });
 
     const alarm = new Alarm(this, 'DLQ-Alarm', {
+      alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
       metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
       threshold: props.messageThreshold || 5,
       evaluationPeriods: props.evaluationThreshold || 1,
@@ -91,6 +92,7 @@ export class MonitoredQueue extends Construct {
         SLACK_BOT_TOKEN: slackToken,
         SLACK_CHANNEL: slackChannel,
       },
+      logRetention: 7,
     });
 
     topic.addSubscription(new LambdaSubscription(slackListener));

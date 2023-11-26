@@ -12,7 +12,28 @@ export const handler = async (event) => {
       SLACK_CHAT_POST_MESSAGE_ENDPOINT,
       {
         channel: process.env.SLACK_CHANNEL,
-        text: getTextMessage(message),
+        // text: getTextMessage(message),
+        attachments: [
+          {
+            color: getMessageColor(message),
+            blocks: [
+              {
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: `${message.AlarmName} has been triggered!`,
+                },
+              },
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: getMessageText(message),
+                },
+              },
+            ],
+          },
+        ],
       },
       {
         headers: {
@@ -21,12 +42,15 @@ export const handler = async (event) => {
         },
       },
     );
-
   } catch (error) {
     console.error(error);
   }
 };
 
-function getTextMessage(message: AlarmMessage) {
-  return `${message.AlarmName} state is now ${message.NewStateValue} at ${message.StateChangeTime}`;
+function getMessageColor(message: AlarmMessage) {
+  return message.NewStateValue === 'ALARM' ? '#ff0000' : '#36a64f';
+}
+
+function getMessageText(message: AlarmMessage) {
+  return `*State changed:*\n\n*_${message.OldStateValue}_*\n\n:arrow_down:\n\n*_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
 }
