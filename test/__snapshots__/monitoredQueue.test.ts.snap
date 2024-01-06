@@ -453,7 +453,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "f28977b4f47f136211b3e3791f163fa3cef33786dc1f88f323bd6748fd9aa77a.zip",
+          "S3Key": "1f3ef4860ef73ac9356846f498f519ad13d824fc424afd554be395710f848fe0.zip",
         },
         "Environment": {
           "Variables": {
