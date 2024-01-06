@@ -1,7 +1,7 @@
 import * as esbuild from "esbuild";
 import * as path from "path";
 
-const lambdaPaths = ["lambda/slackListener/"];
+const lambdaPaths = ["lambda/slackListener/", "lambda/googleListener/"];
 
 async function buildLambdas() {
   for (const lambdaPath of lambdaPaths) {
