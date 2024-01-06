@@ -52,5 +52,5 @@ function getMessageColor(message: AlarmMessage) {
 }
 
 function getMessageText(message: AlarmMessage) {
-  return `*State changed:*\n\n*_${message.OldStateValue}_*\n\n:arrow_down:\n\n*_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
+  return `*State changed:*\n\n*_${message.OldStateValue}_*:arrow_right:*_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
 }
