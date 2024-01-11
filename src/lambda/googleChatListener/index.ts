@@ -1,4 +1,4 @@
-import { AlarmMessage } from "../alarmMessage";
+import { AlarmMessage } from '../alarmMessage';
 
 export const handler = async (event) => {
   try {

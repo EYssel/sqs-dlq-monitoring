@@ -58,4 +58,18 @@ describe('MonitoredQueue', () => {
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
   });
+
+  test('should create a monitored queue with a lambda Slack SNS listener and Lambda Subscription, and a lambda Google Chat SNS listener and Lambda Subscription', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      slackChannel: 'test',
+      slackToken: 'test',
+      googleChatToken: 'test',
+    });
+    const template = Template.fromStack(stack);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
 });

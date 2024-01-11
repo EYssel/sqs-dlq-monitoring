@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
@@ -23,6 +23,8 @@ export interface IMonitoredQueueProps {
   readonly slackToken?: string;
   /** Slack channel to post messages to */
   readonly slackChannel?: string;
+  /** Google Chat Token */
+  readonly googleChatToken?: string;
 }
 
 export class MonitoredQueue extends Construct {
@@ -71,6 +73,10 @@ export class MonitoredQueue extends Construct {
         props.slackChannel,
       )
       : {};
+
+    props.googleChatToken
+      ? this.addGoogleChatNotificationDestination(topic, props.googleChatToken)
+      : {};
   }
 
   addEmailNotificationDestination(topic: Topic, emails: string[]) {
@@ -86,11 +92,30 @@ export class MonitoredQueue extends Construct {
   ) {
     const slackListener = new Function(this, 'SlackNotificationLambda', {
       runtime: Runtime.NODEJS_18_X,
+      architecture: Architecture.ARM_64,
       code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
       handler: 'index.handler',
       environment: {
         SLACK_BOT_TOKEN: slackToken,
         SLACK_CHANNEL: slackChannel,
+      },
+      logRetention: 7,
+    });
+
+    topic.addSubscription(new LambdaSubscription(slackListener));
+  }
+
+  addGoogleChatNotificationDestination(
+    topic: Topic,
+    googleChatToken: string,
+  ) {
+    const slackListener = new Function(this, 'GoogleChatNotificationLambda', {
+      runtime: Runtime.NODEJS_18_X,
+      architecture: Architecture.ARM_64,
+      code: Code.fromAsset(path.join(__dirname, '../lib/lambda/googleChatListener')),
+      handler: 'index.handler',
+      environment: {
+        GOOGLE_CHAT_TOKEN: googleChatToken,
       },
       logRetention: 7,
     });
