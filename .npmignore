@@ -24,3 +24,5 @@ tsconfig.tsbuildinfo
 !.jsii
 scripts/
 playground/
+/.gitattributes
+/.projenrc.ts
