@@ -1,4 +1,2 @@
-export {
-  IMonitoredQueueProps, MonitoredQueue,
-} from './monitoredQueue';
+export { IMonitoredQueueProps, MonitoredQueue } from './monitoredQueue';
 
