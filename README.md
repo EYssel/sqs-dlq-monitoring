@@ -51,6 +51,7 @@ When using the construct the following parameters are available for setting up a
 - `slackChannel`
 
 After being set up successfully you will receive messages that look like this when the alarm is triggered:
+
 ![alt text](./documentation/slack-messages-example.png)
 
 ## Slack App
