@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
@@ -61,40 +61,43 @@ export class MonitoredQueue extends Construct {
     alarm.addOkAction(snsAction);
 
     props.emails
-      ? this.addEmailNotificationDestination(topic, props.emails)
+      ? addEmailNotificationDestination(topic, props.emails)
       : {};
 
     props.slackToken && props.slackChannel
-      ? this.addSlackNotificationDestination(
+      ? addSlackNotificationDestination(
+        this,
         topic,
         props.slackToken,
         props.slackChannel,
       )
       : {};
   }
+}
 
-  addEmailNotificationDestination(topic: Topic, emails: string[]) {
-    for (const email of emails) {
-      topic.addSubscription(new EmailSubscription(email));
-    }
+function addEmailNotificationDestination(topic: Topic, emails: string[]) {
+  for (const email of emails) {
+    topic.addSubscription(new EmailSubscription(email));
   }
+}
 
-  addSlackNotificationDestination(
-    topic: Topic,
-    slackToken: string,
-    slackChannel: string,
-  ) {
-    const slackListener = new Function(this, 'SlackNotificationLambda', {
-      runtime: Runtime.NODEJS_18_X,
-      code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
-      handler: 'index.handler',
-      environment: {
-        SLACK_BOT_TOKEN: slackToken,
-        SLACK_CHANNEL: slackChannel,
-      },
-      logRetention: 7,
-    });
+function addSlackNotificationDestination(
+  scope: Construct,
+  topic: Topic,
+  slackToken: string,
+  slackChannel: string,
+) {
+  const slackListener = new Function(scope, 'SlackNotificationLambda', {
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.ARM_64,
+    code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
+    handler: 'index.handler',
+    environment: {
+      SLACK_BOT_TOKEN: slackToken,
+      SLACK_CHANNEL: slackChannel,
+    },
+    logRetention: 7,
+  });
 
-    topic.addSubscription(new LambdaSubscription(slackListener));
-  }
+  topic.addSubscription(new LambdaSubscription(slackListener));
 }

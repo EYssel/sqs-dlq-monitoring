@@ -449,6 +449,9 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         "testSlackNotificationLambdaServiceRole5E2AB417",
       ],
       "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
         "Code": {
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
