@@ -2,7 +2,7 @@ import { awscdk } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Estian Yssel',
   authorAddress: 'estianyssel@gmail.com',
-  cdkVersion: '~2.121.1',
+  cdkVersion: '2.121.1',
   defaultReleaseBranch: 'master',
   jsiiVersion: '~5.3.0',
   name: 'sqs-dlq-monitoring',
