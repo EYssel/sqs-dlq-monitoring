@@ -50,6 +50,9 @@ When using the construct the following parameters are available for setting up a
 - `slackToken`
 - `slackChannel`
 
+After being set up successfully you will receive messages that look like this when the alarm is triggered:
+![alt text](./documentation/slack-messages-example.png)
+
 ## Slack App
 To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
 
