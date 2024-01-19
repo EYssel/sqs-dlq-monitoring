@@ -1,2 +1,2 @@
-export { IMonitoredQueueProps, MonitoredQueue } from './monitoredQueue';
+export { IMonitoredQueueProps, MonitoredQueue, SlackProps } from './monitoredQueue';
 

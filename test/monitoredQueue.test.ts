@@ -52,8 +52,10 @@ describe('MonitoredQueue', () => {
       queueProps: {
         queueName: 'test',
       },
-      slackChannel: 'test',
-      slackToken: 'test',
+      slackProps: {
+        slackChannel: 'test',
+        slackToken: 'test',
+      },
     });
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();

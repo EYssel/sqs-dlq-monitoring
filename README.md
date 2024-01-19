@@ -47,6 +47,8 @@ Be sure to check your Spam folder!
 # Setting up Slack notifications
 When using the construct the following parameters are available for setting up a Slack notification:
 
+In the `slackProps` property:
+
 - `slackToken`
 - `slackChannel`
 

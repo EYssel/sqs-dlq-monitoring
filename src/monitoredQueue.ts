@@ -10,6 +10,13 @@ import {
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
+export interface SlackProps {
+  /** Slack bot token */
+  readonly slackToken: string;
+  /** Slack channel to post messages to */
+  readonly slackChannel: string;
+}
+
 export interface IMonitoredQueueProps {
   /** The properties of the SQS Queue Construct */
   readonly queueProps: QueueProps;
@@ -19,10 +26,11 @@ export interface IMonitoredQueueProps {
   readonly evaluationThreshold?: number;
   /** The emails to which the messages should be sent */
   readonly emails?: string[];
-  /** Slack bot token */
-  readonly slackToken?: string;
-  /** Slack channel to post messages to */
-  readonly slackChannel?: string;
+  /** Properties for setting up Slack Messaging
+   * For info on setting this up see:
+   * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
+   */
+  readonly slackProps? : SlackProps;
 }
 
 export class MonitoredQueue extends Construct {
@@ -64,12 +72,14 @@ export class MonitoredQueue extends Construct {
       ? addEmailNotificationDestination(topic, props.emails)
       : {};
 
-    props.slackToken && props.slackChannel
+    const slackProps = props.slackProps;
+
+    slackProps
       ? addSlackNotificationDestination(
         this,
         topic,
-        props.slackToken,
-        props.slackChannel,
+        slackProps.slackToken,
+        slackProps.slackChannel,
       )
       : {};
   }
