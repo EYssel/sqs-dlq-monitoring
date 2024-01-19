@@ -10,19 +10,44 @@ import {
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
+export interface SlackProps {
+  /** Slack bot token for providing access to the Lambda function to write messages to Slack
+   * @required
+   */
+  readonly slackToken: string;
+
+  /** Slack channel to post messages to
+   * @required
+  */
+  readonly slackChannel: string;
+}
+
 export interface IMonitoredQueueProps {
-  /** The properties of the SQS Queue Construct */
+  /** The properties of the SQS Queue Construct
+   * @required
+   */
   readonly queueProps: QueueProps;
-  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
+
+  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm
+   * @default 5
+   * @optional
+   */
   readonly messageThreshold?: number;
-  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm */
+
+  /** The number of periods over which data is compared to the specified threshold.
+   * @default 1
+   * @optional
+  */
   readonly evaluationThreshold?: number;
+
   /** The emails to which the messages should be sent */
   readonly emails?: string[];
-  /** Slack bot token */
-  readonly slackToken?: string;
-  /** Slack channel to post messages to */
-  readonly slackChannel?: string;
+
+  /** Properties for setting up Slack Messaging
+   * For info on setting this up see:
+   * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
+   */
+  readonly slackProps? : SlackProps;
 }
 
 export class MonitoredQueue extends Construct {
@@ -64,12 +89,14 @@ export class MonitoredQueue extends Construct {
       ? addEmailNotificationDestination(topic, props.emails)
       : {};
 
-    props.slackToken && props.slackChannel
+    const slackProps = props.slackProps;
+
+    slackProps
       ? addSlackNotificationDestination(
         this,
         topic,
-        props.slackToken,
-        props.slackChannel,
+        slackProps.slackToken,
+        slackProps.slackChannel,
       )
       : {};
   }
