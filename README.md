@@ -79,7 +79,9 @@ export class ShowcaseStack extends cdk.Stack {
 
 ## API
 
-Refer to API.md
+For detailed API documentation refer to:
+
+![API Documentation](./API.md)
 ___
 
 # Why?
@@ -110,7 +112,7 @@ To support this construct the following infrastucture is deployed:
 
 A representation of the infrastructure can be seen below.
 
-![alt text](./documentation/infrastructure_diagram.png)
+![Infrastructure Diagram](./documentation/infrastructure_diagram.png)
 
 ___
 
@@ -150,7 +152,7 @@ In the `slackProps` property:
 
 After being set up successfully you will receive messages that look like this when the alarm is triggered:
 
-![alt text](./documentation/slack-messages-example.png)
+![Slack Example Messages](./documentation/slack-messages-example.png)
 
 ## Slack App
 To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
