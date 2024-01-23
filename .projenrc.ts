@@ -8,7 +8,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   name: 'sqs-dlq-monitoring',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/EYssel/sqs-dlq-monitoring.git',
-  docgen: false,
+  docgen: true,
+  docgenFilePath: 'API.md',
   jestOptions: {
     jestConfig: {
       testMatch: ['**/?(*.)+(spec|test).+(ts|tsx|js)'],

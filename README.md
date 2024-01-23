@@ -1,4 +1,27 @@
 # sqs-dlq-monitoring
+
+- [sqs-dlq-monitoring](#sqs-dlq-monitoring)
+- [Getting Started](#getting-started)
+  - [Example](#example)
+    - [Install the package:](#install-the-package)
+    - [Import the construct into your stack:](#import-the-construct-into-your-stack)
+  - [API](#api)
+- [Why?](#why)
+- [Deployed Infrastructure](#deployed-infrastructure)
+- [Setting up Email notifications](#setting-up-email-notifications)
+  - [`emails`](#emails)
+  - [Example](#example-1)
+- [Setting up Slack notifications](#setting-up-slack-notifications)
+  - [Slack App](#slack-app)
+  - [`slackToken`](#slacktoken)
+  - [`slackChannel`](#slackchannel)
+  - [Example](#example-2)
+- [Contributing](#contributing)
+  - [How to get started with local development?](#how-to-get-started-with-local-development)
+    - [Tips](#tips)
+      - [Create a "Playground" environment](#create-a-playground-environment)
+- [Credits](#credits)
+
 This is an AWS CDK construct which creates an AWS Simple-Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ).
 
 Based on the configuration, this so called `MonitoredQueue` construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold.
@@ -10,7 +33,9 @@ The following messaging locations are available:
 
 ___
 
-# Example
+# Getting Started
+
+## Example
 
 Here is an example for how to use this construct in your AWS CDK TypeScript project.
 
@@ -20,7 +45,7 @@ After setting up your AWS CDK app.
 
 ```npm install sqs-dlq-monitoring```
 
-### Then import the construct into your stack:
+### Import the construct into your stack:
 
 ```ts
 import * as cdk from "aws-cdk-lib";
@@ -41,7 +66,7 @@ export class ShowcaseStack extends cdk.Stack {
       emails: [
         `email@coolstuff.com`,
         `support@coolstuff.com`,
-      ]
+      ],
       slackProps: {
         slackToken: '...',
         slackChannel: '...',
@@ -52,7 +77,9 @@ export class ShowcaseStack extends cdk.Stack {
 
 ```
 
+## API
 
+Refer to API.md
 ___
 
 # Why?
@@ -107,7 +134,7 @@ Be sure to check your Spam folder!
     `email@coolstuff.com`,
     `support@coolstuff.com`,
     ...
-  ]
+  ],
 }
 ```
 
@@ -189,3 +216,19 @@ Feel free to create Issues and PR's if you want to contribute to the project!
 3. Import the package from the `lib/` path in the root.
 
 4. Deploy to your personal AWS account to test
+
+
+# Credits
+
+Special thanks to the following persons / organisations who helped out directly and indirectly throughout the process.
+
+- Symbiotics Application Services (https://symbiotics.co.za/)
+  - Provided the environment and support for the initial development of the idea, and kindly allowed me to recreate this publicly.
+- @rehanvdm (https://github.com/rehanvdm)
+  - Provided initial inspiration indirectly, and then later helped directly by doing some code review.
+- @geekmidas (https://github.com/geekmidas)
+  - Motivating me to do this, and mentoring in general.
+  - Provided code-review.
+- Side-Project Society Discord Server members
+  - A discord server set up to motivate each other to work on side-projects like this.
+  - It is invaluable to keep me motivated during the process, and to get things done.
