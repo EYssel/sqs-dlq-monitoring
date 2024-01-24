@@ -1,4 +1,33 @@
 # sqs-dlq-monitoring
+
+- [sqs-dlq-monitoring](#sqs-dlq-monitoring)
+- [Getting Started](#getting-started)
+  - [Example](#example)
+    - [Install the package:](#install-the-package)
+    - [Import the construct into your stack:](#import-the-construct-into-your-stack)
+  - [API](#api)
+    - [`queueProps`](#queueprops)
+    - [`maxReceiveCount`](#maxreceivecount)
+    - [`messageThreshold`](#messagethreshold)
+    - [`evaluationThreshold`](#evaluationthreshold)
+    - [`emails`](#emails)
+    - [`slackProps`](#slackprops)
+- [Why?](#why)
+- [Deployed Infrastructure](#deployed-infrastructure)
+- [Setting up Email notifications](#setting-up-email-notifications)
+  - [`emails`](#emails-1)
+  - [Example](#example-1)
+- [Setting up Slack notifications](#setting-up-slack-notifications)
+  - [Slack App](#slack-app)
+  - [`slackToken`](#slacktoken)
+  - [`slackChannel`](#slackchannel)
+  - [Example](#example-2)
+- [Contributing](#contributing)
+  - [How to get started with local development?](#how-to-get-started-with-local-development)
+    - [Tips](#tips)
+      - [Create a "Playground" environment](#create-a-playground-environment)
+- [Credits](#credits)
+
 This is an AWS CDK construct which creates an AWS Simple-Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ).
 
 Based on the configuration, this so called `MonitoredQueue` construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold.
@@ -10,7 +39,9 @@ The following messaging locations are available:
 
 ___
 
-# Example
+# Getting Started
+
+## Example
 
 Here is an example for how to use this construct in your AWS CDK TypeScript project.
 
@@ -20,7 +51,7 @@ After setting up your AWS CDK app.
 
 ```npm install sqs-dlq-monitoring```
 
-### Then import the construct into your stack:
+### Import the construct into your stack:
 
 ```ts
 import * as cdk from "aws-cdk-lib";
@@ -41,7 +72,7 @@ export class ShowcaseStack extends cdk.Stack {
       emails: [
         `email@coolstuff.com`,
         `support@coolstuff.com`,
-      ]
+      ],
       slackProps: {
         slackToken: '...',
         slackChannel: '...',
@@ -52,7 +83,56 @@ export class ShowcaseStack extends cdk.Stack {
 
 ```
 
+## API
 
+### `queueProps`
+
+The standard properties of the SQS Queue Construct.
+
+You can also use this property to override the default values for the deadLetterQueue.
+
+Example:
+
+```ts
+new MonitoredQueue(stack, 'ExampleQueue', {
+  queueProps: {
+    queueName: 'Example-123',
+    deadLetterQueue: {
+      queue: new Queue(stack, 'DLQ', {
+        queueName: 'custom-dlq',
+      }),
+      maxReceiveCount: 3,
+    },
+  },
+  emails: [
+    `...`,
+  ]
+});
+```
+
+### `maxReceiveCount`
+
+The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+
+### `messageThreshold`
+
+The threshold for the amount of messages that are in the DLQ which trigger the alarm
+
+### `evaluationThreshold`
+
+The number of periods over which data is compared to the specified threshold.
+
+### `emails`
+
+The emails to which the messages should be sent
+
+### `slackProps`
+
+Properties for setting up Slack Messaging
+
+For info on setting this up see:
+
+[Setting Up Slack Notifications](#setting-up-slack-notifications)
 ___
 
 # Why?
@@ -83,7 +163,7 @@ To support this construct the following infrastucture is deployed:
 
 A representation of the infrastructure can be seen below.
 
-![alt text](./documentation/infrastructure_diagram.png)
+![Infrastructure Diagram](./documentation/infrastructure_diagram.png)
 
 ___
 
@@ -107,7 +187,7 @@ Be sure to check your Spam folder!
     `email@coolstuff.com`,
     `support@coolstuff.com`,
     ...
-  ]
+  ],
 }
 ```
 
@@ -123,7 +203,7 @@ In the `slackProps` property:
 
 After being set up successfully you will receive messages that look like this when the alarm is triggered:
 
-![alt text](./documentation/slack-messages-example.png)
+![Slack Example Messages](./documentation/slack-messages-example.png)
 
 ## Slack App
 To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
@@ -189,3 +269,19 @@ Feel free to create Issues and PR's if you want to contribute to the project!
 3. Import the package from the `lib/` path in the root.
 
 4. Deploy to your personal AWS account to test
+
+
+# Credits
+
+Special thanks to the following persons / organisations who helped out directly and indirectly throughout the process.
+
+- Symbiotics Application Services (https://symbiotics.co.za/)
+  - Provided the environment and support for the initial development of the idea, and kindly allowed me to recreate this publicly.
+- @rehanvdm (https://github.com/rehanvdm)
+  - Provided initial inspiration indirectly, and then later helped directly by doing some code review.
+- @geekmidas (https://github.com/geekmidas)
+  - Motivating me to do this, and mentoring in general.
+  - Provided code-review.
+- Side-Project Society Discord Server members
+  - A discord server set up to motivate each other to work on side-projects like this.
+  - It is invaluable to keep me motivated during the process, and to get things done.

@@ -23,10 +23,16 @@ export interface SlackProps {
 }
 
 export interface IMonitoredQueueProps {
-  /** The properties of the SQS Queue Construct
+  /** The standard properties of the SQS Queue Construct
    * @required
    */
   readonly queueProps: QueueProps;
+
+  /** The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+   * @default 3
+   * @optional
+   */
+  readonly maxReceiveCount?: number;
 
   /** The threshold for the amount of messages that are in the DLQ which trigger the alarm
    * @default 5
@@ -40,12 +46,15 @@ export interface IMonitoredQueueProps {
   */
   readonly evaluationThreshold?: number;
 
-  /** The emails to which the messages should be sent */
+  /** The emails to which the messages should be sent
+   * @optional
+  */
   readonly emails?: string[];
 
   /** Properties for setting up Slack Messaging
    * For info on setting this up see:
    * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
+   * @optional
    */
   readonly slackProps? : SlackProps;
 }
@@ -60,7 +69,7 @@ export class MonitoredQueue extends Construct {
         queue: new Queue(this, 'DeadLetterQueue', {
           queueName: `${props.queueProps.queueName}-dlq`,
         }),
-        maxReceiveCount: 3,
+        maxReceiveCount: props.maxReceiveCount || 3,
       };
 
     new Queue(this, 'Queue', {

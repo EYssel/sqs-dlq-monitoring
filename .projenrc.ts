@@ -4,7 +4,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   authorAddress: 'estianyssel@gmail.com',
   cdkVersion: '2.121.1',
   defaultReleaseBranch: 'master',
-  jsiiVersion: '~5.3.0',
+  jsiiVersion: '~5.3.8',
   name: 'sqs-dlq-monitoring',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/EYssel/sqs-dlq-monitoring.git',
