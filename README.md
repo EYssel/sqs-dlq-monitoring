@@ -6,10 +6,16 @@
     - [Install the package:](#install-the-package)
     - [Import the construct into your stack:](#import-the-construct-into-your-stack)
   - [API](#api)
+    - [`queueProps`](#queueprops)
+    - [`maxReceiveCount`](#maxreceivecount)
+    - [`messageThreshold`](#messagethreshold)
+    - [`evaluationThreshold`](#evaluationthreshold)
+    - [`emails`](#emails)
+    - [`slackProps`](#slackprops)
 - [Why?](#why)
 - [Deployed Infrastructure](#deployed-infrastructure)
 - [Setting up Email notifications](#setting-up-email-notifications)
-  - [`emails`](#emails)
+  - [`emails`](#emails-1)
   - [Example](#example-1)
 - [Setting up Slack notifications](#setting-up-slack-notifications)
   - [Slack App](#slack-app)
@@ -79,9 +85,54 @@ export class ShowcaseStack extends cdk.Stack {
 
 ## API
 
-For detailed API documentation refer to:
+### `queueProps`
 
-![API Documentation](./API.md)
+The standard properties of the SQS Queue Construct.
+
+You can also use this property to override the default values for the deadLetterQueue.
+
+Example:
+
+```ts
+new MonitoredQueue(stack, 'ExampleQueue', {
+  queueProps: {
+    queueName: 'Example-123',
+    deadLetterQueue: {
+      queue: new Queue(stack, 'DLQ', {
+        queueName: 'custom-dlq',
+      }),
+      maxReceiveCount: 3,
+    },
+  },
+  emails: [
+    `...`,
+  ]
+});
+```
+
+### `maxReceiveCount`
+
+The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+
+### `messageThreshold`
+
+The threshold for the amount of messages that are in the DLQ which trigger the alarm
+
+### `evaluationThreshold`
+
+The number of periods over which data is compared to the specified threshold.
+
+### `emails`
+
+The emails to which the messages should be sent
+
+### `slackProps`
+
+Properties for setting up Slack Messaging
+
+For info on setting this up see:
+
+[Setting Up Slack Notifications](#setting-up-slack-notifications)
 ___
 
 # Why?
