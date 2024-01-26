@@ -286,7 +286,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip",
+          "S3Key": "eb5b005c858404ea0c8f68098ed5dcdf5340e02461f149751d10f59c210d5ef8.zip",
         },
         "Handler": "index.handler",
         "Role": {
@@ -295,8 +295,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
-        "Timeout": 900,
+        "Runtime": "nodejs14.x",
       },
       "Type": "AWS::Lambda::Function",
     },
