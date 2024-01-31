@@ -427,25 +427,9 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
-    "testSlackNotificationLambdaAllowInvoketestTopicFC4454569C5983A0": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "testSlackNotificationLambdaF8C3E91E",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "testTopic20AA7407",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "testSlackNotificationLambdaF8C3E91E": {
+    "testSlackListenerLambdaTEST1AF2CA5CF": {
       "DependsOn": [
-        "testSlackNotificationLambdaServiceRole5E2AB417",
+        "testSlackListenerLambdaTEST1ServiceRole12E9B740",
       ],
       "Properties": {
         "Architectures": [
@@ -466,7 +450,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "testSlackNotificationLambdaServiceRole5E2AB417",
+            "testSlackListenerLambdaTEST1ServiceRole12E9B740",
             "Arn",
           ],
         },
@@ -474,7 +458,23 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::Lambda::Function",
     },
-    "testSlackNotificationLambdaLogRetention50573FD2": {
+    "testSlackListenerLambdaTEST1AllowInvoketestTopicFC4454566BC2971D": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "testSlackListenerLambdaTEST1AF2CA5CF",
+            "Arn",
+          ],
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "testTopic20AA7407",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "testSlackListenerLambdaTEST1LogRetentionDF079AC5": {
       "Properties": {
         "LogGroupName": {
           "Fn::Join": [
@@ -482,7 +482,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             [
               "/aws/lambda/",
               {
-                "Ref": "testSlackNotificationLambdaF8C3E91E",
+                "Ref": "testSlackListenerLambdaTEST1AF2CA5CF",
               },
             ],
           ],
@@ -497,7 +497,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "Custom::LogRetention",
     },
-    "testSlackNotificationLambdaServiceRole5E2AB417": {
+    "testSlackListenerLambdaTEST1ServiceRole12E9B740": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -528,11 +528,127 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::IAM::Role",
     },
-    "testSlackNotificationLambdaTopicC5226703": {
+    "testSlackListenerLambdaTEST1TopicE4B1A369": {
       "Properties": {
         "Endpoint": {
           "Fn::GetAtt": [
-            "testSlackNotificationLambdaF8C3E91E",
+            "testSlackListenerLambdaTEST1AF2CA5CF",
+            "Arn",
+          ],
+        },
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "testTopic20AA7407",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "testSlackListenerLambdaTEST25BFB2FE3": {
+      "DependsOn": [
+        "testSlackListenerLambdaTEST2ServiceRole844A87F8",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "b8d871f16c1ed12f847d76dc81ee70cba7bac25f59bc08eff3a4fedc057b6d39.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "SLACK_BOT_TOKEN": "test_token2",
+            "SLACK_CHANNEL": "test_channel2",
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "testSlackListenerLambdaTEST2ServiceRole844A87F8",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "testSlackListenerLambdaTEST2AllowInvoketestTopicFC445456C2519239": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "testSlackListenerLambdaTEST25BFB2FE3",
+            "Arn",
+          ],
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "testTopic20AA7407",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "testSlackListenerLambdaTEST2LogRetention98B5F421": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "testSlackListenerLambdaTEST25BFB2FE3",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 7,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "testSlackListenerLambdaTEST2ServiceRole844A87F8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "testSlackListenerLambdaTEST2Topic5630BA4C": {
+      "Properties": {
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "testSlackListenerLambdaTEST25BFB2FE3",
             "Arn",
           ],
         },

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -9,6 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 export interface IMessagingProvider {
   deployProvider(scope: Construct, topic: Topic): void;
@@ -25,9 +25,15 @@ export class SlackProvider implements IMessagingProvider {
    */
   readonly slackChannel: string;
 
-  constructor(slackToken: string, slackChannel: string) {
+  /**
+   * Unique name or identifier for the slackProvider
+   */
+  readonly name?: string;
+
+  constructor(slackToken: string, slackChannel: string, name: string) {
     this.slackToken = slackToken;
     this.slackChannel = slackChannel;
+    this.name = name;
   }
 
   deployProvider(scope: Construct, topic: Topic) {
@@ -36,6 +42,7 @@ export class SlackProvider implements IMessagingProvider {
       topic,
       this.slackToken,
       this.slackChannel,
+      this.name,
     );
   }
 }
@@ -77,15 +84,10 @@ export interface IMonitoredQueueProps {
    */
   readonly evaluationThreshold?: number;
 
-  //readonly emails?: string[];
-
-  /** Properties for setting up Slack Messaging
-   * For info on setting this up see:
-   * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
+  /**
+   * A list of messaging providers that will be deployed and will listen for changes to the alarm.
    * @optional
    */
-  //readonly slackProps? : SlackProps;
-
   readonly messagingProviders?: IMessagingProvider[];
 }
 
@@ -143,18 +145,27 @@ function addSlackNotificationDestination(
   topic: Topic,
   slackToken: string,
   slackChannel: string,
+  name?: string,
 ) {
-  const slackListener = new Function(scope, 'SlackNotificationLambda', {
-    runtime: Runtime.NODEJS_18_X,
-    architecture: Architecture.ARM_64,
-    code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
-    handler: 'index.handler',
-    environment: {
-      SLACK_BOT_TOKEN: slackToken,
-      SLACK_CHANNEL: slackChannel,
+  const slackListener = new Function(
+    scope,
+    'SlackListenerLambda' + (name ? `${name.toUpperCase()}` : randomIdentifier()),
+    {
+      runtime: Runtime.NODEJS_18_X,
+      architecture: Architecture.ARM_64,
+      code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
+      handler: 'index.handler',
+      environment: {
+        SLACK_BOT_TOKEN: slackToken,
+        SLACK_CHANNEL: slackChannel,
+      },
+      logRetention: 7,
     },
-    logRetention: 7,
-  });
+  );
 
   topic.addSubscription(new LambdaSubscription(slackListener));
+}
+
+export function randomIdentifier() {
+  return (Math.random() + 1).toString(36).substring(7).toUpperCase();
 }
