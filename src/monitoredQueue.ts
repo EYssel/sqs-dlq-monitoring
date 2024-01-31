@@ -10,7 +10,11 @@ import {
 import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
-export interface SlackProps {
+export interface IMessagingProvider {
+  deployProvider(scope: Construct, topic: Topic): void;
+}
+
+export class SlackProvider implements IMessagingProvider {
   /** Slack bot token for providing access to the Lambda function to write messages to Slack
    * @required
    */
@@ -18,8 +22,35 @@ export interface SlackProps {
 
   /** Slack channel to post messages to
    * @required
-  */
+   */
   readonly slackChannel: string;
+
+  constructor(slackToken: string, slackChannel: string) {
+    this.slackToken = slackToken;
+    this.slackChannel = slackChannel;
+  }
+
+  deployProvider(scope: Construct, topic: Topic) {
+    addSlackNotificationDestination(
+      scope,
+      topic,
+      this.slackToken,
+      this.slackChannel,
+    );
+  }
+}
+
+export class EmailProvider implements IMessagingProvider {
+  /** The emails to which the messages should be sent */
+  readonly emails: string[];
+
+  constructor(emails: string[]) {
+    this.emails = emails;
+  }
+
+  deployProvider(_scope: Construct, topic: Topic): void {
+    addEmailNotificationDestination(topic, this.emails);
+  }
 }
 
 export interface IMonitoredQueueProps {
@@ -43,20 +74,19 @@ export interface IMonitoredQueueProps {
   /** The number of periods over which data is compared to the specified threshold.
    * @default 1
    * @optional
-  */
+   */
   readonly evaluationThreshold?: number;
 
-  /** The emails to which the messages should be sent
-   * @optional
-  */
-  readonly emails?: string[];
+  //readonly emails?: string[];
 
   /** Properties for setting up Slack Messaging
    * For info on setting this up see:
    * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
    * @optional
    */
-  readonly slackProps? : SlackProps;
+  //readonly slackProps? : SlackProps;
+
+  readonly messagingProviders?: IMessagingProvider[];
 }
 
 export class MonitoredQueue extends Construct {
@@ -94,20 +124,11 @@ export class MonitoredQueue extends Construct {
     alarm.addAlarmAction(snsAction);
     alarm.addOkAction(snsAction);
 
-    props.emails
-      ? addEmailNotificationDestination(topic, props.emails)
-      : {};
-
-    const slackProps = props.slackProps;
-
-    slackProps
-      ? addSlackNotificationDestination(
-        this,
-        topic,
-        slackProps.slackToken,
-        slackProps.slackChannel,
-      )
-      : {};
+    for (const messageProvider of props.messagingProviders
+      ? props.messagingProviders
+      : []) {
+      messageProvider.deployProvider(this, topic);
+    }
   }
 }
 

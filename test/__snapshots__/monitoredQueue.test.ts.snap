@@ -459,8 +459,8 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         },
         "Environment": {
           "Variables": {
-            "SLACK_BOT_TOKEN": "test",
-            "SLACK_CHANNEL": "test",
+            "SLACK_BOT_TOKEN": "test_token",
+            "SLACK_CHANNEL": "test_channel",
           },
         },
         "Handler": "index.handler",

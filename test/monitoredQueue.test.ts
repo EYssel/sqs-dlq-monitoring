@@ -2,6 +2,7 @@ import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { MonitoredQueue } from '../src/index';
+import { EmailProvider, SlackProvider } from '../src/monitoredQueue';
 
 describe('MonitoredQueue', () => {
   test('should create a monitored queue', () => {
@@ -40,7 +41,9 @@ describe('MonitoredQueue', () => {
       queueProps: {
         queueName: 'test',
       },
-      emails: ['testemail@test.com'],
+      messagingProviders: [
+        new EmailProvider(['testemail@test.com']),
+      ],
     });
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
@@ -52,10 +55,9 @@ describe('MonitoredQueue', () => {
       queueProps: {
         queueName: 'test',
       },
-      slackProps: {
-        slackChannel: 'test',
-        slackToken: 'test',
-      },
+      messagingProviders: [
+        new SlackProvider('test_token', 'test_channel'),
+      ],
     });
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
