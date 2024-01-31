@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -6,9 +7,8 @@ import {
   EmailSubscription,
   LambdaSubscription,
 } from 'aws-cdk-lib/aws-sns-subscriptions';
-import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
+import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import * as path from 'path';
 
 export interface IMessagingProvider {
   deployProvider(scope: Construct, topic: Topic): void;
@@ -93,6 +93,26 @@ export interface IMonitoredQueueProps {
 }
 
 export class MonitoredQueue extends Construct {
+  /**
+   * The created `Queue` construct
+   */
+  public readonly queue: Queue;
+
+  /**
+   * The created `DeadLetterQueue` construct
+   */
+  public readonly deadLetterQueue: DeadLetterQueue;
+
+  /**
+   * The created `Topic` construct
+   */
+  public readonly topic: Topic;
+
+  /**
+   * The created `Alarm` construct
+   */
+  public readonly alarm: Alarm;
+
   constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
     super(scope, id);
 
@@ -105,10 +125,14 @@ export class MonitoredQueue extends Construct {
         maxReceiveCount: props.maxReceiveCount || 3,
       };
 
-    new Queue(this, 'Queue', {
+    this.deadLetterQueue = deadLetterQueue;
+
+    const queue = new Queue(this, 'Queue', {
       ...props.queueProps,
       deadLetterQueue,
     });
+
+    this.queue = queue;
 
     const alarm = new Alarm(this, 'DLQ-Alarm', {
       alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
@@ -118,9 +142,13 @@ export class MonitoredQueue extends Construct {
       treatMissingData: TreatMissingData.NOT_BREACHING,
     });
 
+    this.alarm = alarm;
+
     const topic = new Topic(this, 'Topic', {
       topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
     });
+
+    this.topic = topic;
 
     const snsAction = new SnsAction(topic);
 
@@ -148,21 +176,17 @@ function addSlackNotificationDestination(
   slackChannel: string,
   name: string,
 ) {
-  const slackListener = new Function(
-    scope,
-    'SlackListenerLambda' + name,
-    {
-      runtime: Runtime.NODEJS_18_X,
-      architecture: Architecture.ARM_64,
-      code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
-      handler: 'index.handler',
-      environment: {
-        SLACK_BOT_TOKEN: slackToken,
-        SLACK_CHANNEL: slackChannel,
-      },
-      logRetention: 7,
+  const slackListener = new Function(scope, 'SlackListenerLambda' + name, {
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.ARM_64,
+    code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
+    handler: 'index.handler',
+    environment: {
+      SLACK_BOT_TOKEN: slackToken,
+      SLACK_CHANNEL: slackChannel,
     },
-  );
+    logRetention: 7,
+  });
 
   topic.addSubscription(new LambdaSubscription(slackListener));
 }
