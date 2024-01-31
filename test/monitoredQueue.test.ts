@@ -17,6 +17,9 @@ describe('MonitoredQueue', () => {
     });
 
     const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
     expect(template.toJSON()).toMatchSnapshot();
   });
 
@@ -35,6 +38,9 @@ describe('MonitoredQueue', () => {
     });
 
     const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
     expect(template.toJSON()).toMatchSnapshot();
   });
 
@@ -47,6 +53,9 @@ describe('MonitoredQueue', () => {
       messagingProviders: [new EmailProvider(['testemail@test.com'])],
     });
     const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
     expect(template.toJSON()).toMatchSnapshot();
   });
 
@@ -62,6 +71,9 @@ describe('MonitoredQueue', () => {
       ],
     });
     const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::Lambda::Function', 3);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
     expect(template.toJSON()).toMatchSnapshot();
   });
 });
