@@ -26,9 +26,10 @@ export class SlackProvider implements IMessagingProvider {
   readonly slackChannel: string;
 
   /**
-   * Unique name or identifier for the slackProvider
+   * Unique name or identifier for the slack provider.
+   * This allows multiple slack providers to be created for a single alarm.
    */
-  readonly name?: string;
+  readonly name: string;
 
   constructor(slackToken: string, slackChannel: string, name: string) {
     this.slackToken = slackToken;
@@ -145,11 +146,11 @@ function addSlackNotificationDestination(
   topic: Topic,
   slackToken: string,
   slackChannel: string,
-  name?: string,
+  name: string,
 ) {
   const slackListener = new Function(
     scope,
-    'SlackListenerLambda' + (name ? `${name.toUpperCase()}` : randomIdentifier()),
+    'SlackListenerLambda' + name,
     {
       runtime: Runtime.NODEJS_18_X,
       architecture: Architecture.ARM_64,
@@ -164,8 +165,4 @@ function addSlackNotificationDestination(
   );
 
   topic.addSubscription(new LambdaSubscription(slackListener));
-}
-
-export function randomIdentifier() {
-  return (Math.random() + 1).toString(36).substring(7).toUpperCase();
 }

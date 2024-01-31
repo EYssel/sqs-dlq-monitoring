@@ -427,9 +427,9 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
-    "testSlackListenerLambdaTEST1AF2CA5CF": {
+    "testSlackListenerLambdatest16C2A39C9": {
       "DependsOn": [
-        "testSlackListenerLambdaTEST1ServiceRole12E9B740",
+        "testSlackListenerLambdatest1ServiceRole93D55F98",
       ],
       "Properties": {
         "Architectures": [
@@ -450,7 +450,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST1ServiceRole12E9B740",
+            "testSlackListenerLambdatest1ServiceRole93D55F98",
             "Arn",
           ],
         },
@@ -458,12 +458,12 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::Lambda::Function",
     },
-    "testSlackListenerLambdaTEST1AllowInvoketestTopicFC4454566BC2971D": {
+    "testSlackListenerLambdatest1AllowInvoketestTopicFC445456C954873C": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST1AF2CA5CF",
+            "testSlackListenerLambdatest16C2A39C9",
             "Arn",
           ],
         },
@@ -474,7 +474,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "testSlackListenerLambdaTEST1LogRetentionDF079AC5": {
+    "testSlackListenerLambdatest1LogRetentionC81D2B52": {
       "Properties": {
         "LogGroupName": {
           "Fn::Join": [
@@ -482,7 +482,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             [
               "/aws/lambda/",
               {
-                "Ref": "testSlackListenerLambdaTEST1AF2CA5CF",
+                "Ref": "testSlackListenerLambdatest16C2A39C9",
               },
             ],
           ],
@@ -497,7 +497,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "Custom::LogRetention",
     },
-    "testSlackListenerLambdaTEST1ServiceRole12E9B740": {
+    "testSlackListenerLambdatest1ServiceRole93D55F98": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -528,11 +528,11 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::IAM::Role",
     },
-    "testSlackListenerLambdaTEST1TopicE4B1A369": {
+    "testSlackListenerLambdatest1Topic284B3A01": {
       "Properties": {
         "Endpoint": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST1AF2CA5CF",
+            "testSlackListenerLambdatest16C2A39C9",
             "Arn",
           ],
         },
@@ -543,9 +543,9 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::SNS::Subscription",
     },
-    "testSlackListenerLambdaTEST25BFB2FE3": {
+    "testSlackListenerLambdatest264B06AA2": {
       "DependsOn": [
-        "testSlackListenerLambdaTEST2ServiceRole844A87F8",
+        "testSlackListenerLambdatest2ServiceRole02D6F7E5",
       ],
       "Properties": {
         "Architectures": [
@@ -566,7 +566,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST2ServiceRole844A87F8",
+            "testSlackListenerLambdatest2ServiceRole02D6F7E5",
             "Arn",
           ],
         },
@@ -574,12 +574,12 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::Lambda::Function",
     },
-    "testSlackListenerLambdaTEST2AllowInvoketestTopicFC445456C2519239": {
+    "testSlackListenerLambdatest2AllowInvoketestTopicFC445456886196C2": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST25BFB2FE3",
+            "testSlackListenerLambdatest264B06AA2",
             "Arn",
           ],
         },
@@ -590,7 +590,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "testSlackListenerLambdaTEST2LogRetention98B5F421": {
+    "testSlackListenerLambdatest2LogRetentionAB8E8302": {
       "Properties": {
         "LogGroupName": {
           "Fn::Join": [
@@ -598,7 +598,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
             [
               "/aws/lambda/",
               {
-                "Ref": "testSlackListenerLambdaTEST25BFB2FE3",
+                "Ref": "testSlackListenerLambdatest264B06AA2",
               },
             ],
           ],
@@ -613,7 +613,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "Custom::LogRetention",
     },
-    "testSlackListenerLambdaTEST2ServiceRole844A87F8": {
+    "testSlackListenerLambdatest2ServiceRole02D6F7E5": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -644,11 +644,11 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
       },
       "Type": "AWS::IAM::Role",
     },
-    "testSlackListenerLambdaTEST2Topic5630BA4C": {
+    "testSlackListenerLambdatest2TopicB232AB71": {
       "Properties": {
         "Endpoint": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdaTEST25BFB2FE3",
+            "testSlackListenerLambdatest264B06AA2",
             "Arn",
           ],
         },

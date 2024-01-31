@@ -5,7 +5,6 @@ import { MonitoredQueue } from '../src/index';
 import {
   EmailProvider,
   SlackProvider,
-  randomIdentifier,
 } from '../src/monitoredQueue';
 
 describe('MonitoredQueue', () => {
@@ -64,15 +63,5 @@ describe('MonitoredQueue', () => {
     });
     const template = Template.fromStack(stack);
     expect(template.toJSON()).toMatchSnapshot();
-  });
-
-  test('should generate a random identifier for usage in to create unique ids', () => {
-    const randomIds: string[] = [];
-
-    for (let id = 0; id < 10; id++) {
-      const randomId = randomIdentifier();
-      randomIds.push(randomId);
-      expect(randomIds.filter((item) => item == randomId)).toHaveLength(1);
-    }
   });
 });
