@@ -40,7 +40,7 @@ The following messaging locations are available:
 - Email
 - Slack
 
-___
+---
 
 # Getting Started
 
@@ -52,11 +52,11 @@ After setting up your AWS CDK app.
 
 ### Install the package with npm:
 
-```npm install sqs-dlq-monitoring```
+`npm install sqs-dlq-monitoring`
 
 ### Install the package with yarn:
 
-```yarn add sqs-dlq-monitoring```
+`yarn add sqs-dlq-monitoring`
 
 ### Import the construct into your stack:
 
@@ -74,7 +74,7 @@ export class ShowcaseStack extends cdk.Stack {
       },
       messagingProviders: [
         new EmailProvider([
-          'coolemail@example.com', 
+          'coolemail@example.com',
           'coolemail2@example.com'
          ]),
         new SlackProvider('example_123', 'C012345', 'Example1'),
@@ -83,7 +83,8 @@ export class ShowcaseStack extends cdk.Stack {
   }
 }
 ```
-___
+
+---
 
 # Why?
 
@@ -96,10 +97,11 @@ These messages would then be deleted at the end of the retention period.
 This package aims to solve this problem by granting developers an easy way to deploy a solution to monitor and notify them if messages have failed.
 
 Sources:
+
 - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html#sqs-dead-letter-queues-benefits
 - https://medium.com/lumigo/sqs-and-lambda-the-missing-guide-on-failure-modes-7e31644d8722#:~:text=SQS%20with%20Lambda.-,No%20DLQs,-The%20most%20common
 
-___
+---
 
 # API
 
@@ -122,8 +124,8 @@ new MonitoredQueue(stack, 'ExampleQueue', {
       maxReceiveCount: 3,
     },
   },
-  emails: [
-    `...`,
+  messageProviders: [
+    ...
   ]
 });
 ```
@@ -162,7 +164,7 @@ For info on setting this up see:
 
 [Setting Up Slack Notifications](#setting-up-slack-notifications)
 
-___
+---
 
 # Deployed Infrastructure
 
@@ -178,9 +180,10 @@ A representation of the infrastructure can be seen below.
 
 ![Infrastructure Diagram](./documentation/infrastructure_diagram.png)
 
-___
+---
 
 # Setting up Email notifications
+
 When using the construct the following parameter is used for setting up a Email notifications:
 
 - [`messagingProviders`](#messagingproviders)
@@ -200,6 +203,7 @@ These email addresses will be sent a "Subscription" email from AWS, which needs 
 Be sure to check your spam folder
 
 ## Example
+
 ```ts
 {
   ...
@@ -209,9 +213,11 @@ Be sure to check your spam folder
   ...
 };
 ```
-___
+
+---
 
 # Setting up Slack notifications
+
 When using the construct the following parameter is used for setting up a Email notifications:
 
 - [`messagingProviders`](#messagingproviders)
@@ -221,6 +227,7 @@ The `messagingProviders` parameter requires a list of messaging providers of whi
 First you need to setup a Slack App to obtain the necessary information:
 
 ## Slack App
+
 To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
 
 A guide to do so can be found here https://api.slack.com/start/quickstart
@@ -230,16 +237,19 @@ A guide to do so can be found here https://api.slack.com/start/quickstart
 The `SlackProvider` contains parameters for setting up Slack Messaging.
 
 ### `slackToken`
-A Bot User token which will be provided to the `slackToken` parameter. 
 
-The token requires the following scopes: 
-  - `chat.write`
-  - `chat.write.public`
+A Bot User token which will be provided to the `slackToken` parameter.
+
+The token requires the following scopes:
+
+- `chat.write`
+- `chat.write.public`
 
 See [Slack App](#slack-app)
 
 ### `slackChannel`
-A channel that the bot will send messages to. 
+
+A channel that the bot will send messages to.
 
 The channel ID needs to be used as the `slackChannel` parameter.
 
@@ -262,7 +272,7 @@ See [Slack App](#slack-app)
 }
 ```
 
-___
+---
 
 # Contributing
 
@@ -296,7 +306,6 @@ Feel free to create Issues and PR's if you want to contribute to the project!
 
 4. Deploy to your personal AWS account to test
 
-
 # Credits
 
 Special thanks to the following persons / organisations who helped out directly and indirectly throughout the process.
@@ -310,4 +319,4 @@ Special thanks to the following persons / organisations who helped out directly 
   - Provided code-review.
 - Side-Project Society Discord Server members
   - A discord server set up to motivate each other to work on side-projects like this.
-  - It is invaluable to keep me motivated during the process, and to get things done.
+  - The discord server is invaluable to keep me motivated during the process.
