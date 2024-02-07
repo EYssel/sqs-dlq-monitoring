@@ -4,7 +4,9 @@ import { AlarmMessage } from '../alarmMessage';
 const SLACK_CHAT_POST_MESSAGE_ENDPOINT =
   'https://slack.com/api/chat.postMessage';
 
-export const handler = async (event) => {
+export const handler = async (event: {
+  Records: { Sns: { Message: string } }[];
+}) => {
   try {
     const message: AlarmMessage = JSON.parse(event.Records[0].Sns.Message);
 
@@ -40,7 +42,7 @@ export const handler = async (event) => {
           ContentType: 'application/json',
           Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
         },
-      },
+      }
     );
   } catch (error) {
     console.error(error);
