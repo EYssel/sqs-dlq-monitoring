@@ -42,7 +42,7 @@ export const handler = async (event: {
           ContentType: 'application/json',
           Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
         },
-      }
+      },
     );
   } catch (error) {
     console.error(error);
@@ -54,5 +54,5 @@ function getMessageColor(message: AlarmMessage) {
 }
 
 function getMessageText(message: AlarmMessage) {
-  return `*State changed:*\n\n*_${message.OldStateValue}_*:arrow_right:*_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
+  return `*State changed:*\n\n*_${message.OldStateValue}_* :arrow_right: *_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
 }

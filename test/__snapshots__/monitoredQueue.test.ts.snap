@@ -439,7 +439,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "b8d871f16c1ed12f847d76dc81ee70cba7bac25f59bc08eff3a4fedc057b6d39.zip",
+          "S3Key": "150ab0bc460b581554dd17adb84762b326ae57222f5e762db8c3f1ea8b349c18.zip",
         },
         "Environment": {
           "Variables": {
@@ -555,7 +555,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "b8d871f16c1ed12f847d76dc81ee70cba7bac25f59bc08eff3a4fedc057b6d39.zip",
+          "S3Key": "150ab0bc460b581554dd17adb84762b326ae57222f5e762db8c3f1ea8b349c18.zip",
         },
         "Environment": {
           "Variables": {
@@ -882,7 +882,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "b8d871f16c1ed12f847d76dc81ee70cba7bac25f59bc08eff3a4fedc057b6d39.zip",
+          "S3Key": "150ab0bc460b581554dd17adb84762b326ae57222f5e762db8c3f1ea8b349c18.zip",
         },
         "Environment": {
           "Variables": {
@@ -998,7 +998,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "b8d871f16c1ed12f847d76dc81ee70cba7bac25f59bc08eff3a4fedc057b6d39.zip",
+          "S3Key": "150ab0bc460b581554dd17adb84762b326ae57222f5e762db8c3f1ea8b349c18.zip",
         },
         "Environment": {
           "Variables": {
