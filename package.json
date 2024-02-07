@@ -1,5 +1,6 @@
 {
   "name": "sqs-dlq-monitoring",
+  "description": "An AWS CDK construct which creates an AWS Simple-Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ). This so called MonitoredQueue construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold",
   "repository": {
     "type": "git",
     "url": "https://github.com/EYssel/sqs-dlq-monitoring.git"

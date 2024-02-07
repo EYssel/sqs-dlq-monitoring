@@ -7,10 +7,14 @@ import {
   EmailSubscription,
   LambdaSubscription,
 } from 'aws-cdk-lib/aws-sns-subscriptions';
-import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
+import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
-export interface SlackProps {
+export interface IMessagingProvider {
+  deployProvider(scope: Construct, topic: Topic): void;
+}
+
+export class SlackProvider implements IMessagingProvider {
   /** Slack bot token for providing access to the Lambda function to write messages to Slack
    * @required
    */
@@ -18,8 +22,43 @@ export interface SlackProps {
 
   /** Slack channel to post messages to
    * @required
-  */
+   */
   readonly slackChannel: string;
+
+  /**
+   * Unique name or identifier for the slack provider.
+   * This allows multiple slack providers to be created for a single alarm.
+   */
+  readonly name: string;
+
+  constructor(slackToken: string, slackChannel: string, name: string) {
+    this.slackToken = slackToken;
+    this.slackChannel = slackChannel;
+    this.name = name;
+  }
+
+  deployProvider(scope: Construct, topic: Topic) {
+    addSlackNotificationDestination(
+      scope,
+      topic,
+      this.slackToken,
+      this.slackChannel,
+      this.name,
+    );
+  }
+}
+
+export class EmailProvider implements IMessagingProvider {
+  /** The emails to which the messages should be sent */
+  readonly emails: string[];
+
+  constructor(emails: string[]) {
+    this.emails = emails;
+  }
+
+  deployProvider(_scope: Construct, topic: Topic): void {
+    addEmailNotificationDestination(topic, this.emails);
+  }
 }
 
 export interface IMonitoredQueueProps {
@@ -43,23 +82,37 @@ export interface IMonitoredQueueProps {
   /** The number of periods over which data is compared to the specified threshold.
    * @default 1
    * @optional
-  */
+   */
   readonly evaluationThreshold?: number;
 
-  /** The emails to which the messages should be sent
-   * @optional
-  */
-  readonly emails?: string[];
-
-  /** Properties for setting up Slack Messaging
-   * For info on setting this up see:
-   * https://github.com/EYssel/sqs-dlq-monitoring/blob/master/README.md#setting-up-slack-notifications
+  /**
+   * A list of messaging providers that will be deployed and will listen for changes to the alarm.
    * @optional
    */
-  readonly slackProps? : SlackProps;
+  readonly messagingProviders?: IMessagingProvider[];
 }
 
 export class MonitoredQueue extends Construct {
+  /**
+   * The created `Queue` construct
+   */
+  public readonly queue: Queue;
+
+  /**
+   * The created `DeadLetterQueue` construct
+   */
+  public readonly deadLetterQueue: DeadLetterQueue;
+
+  /**
+   * The created `Topic` construct
+   */
+  public readonly topic: Topic;
+
+  /**
+   * The created `Alarm` construct
+   */
+  public readonly alarm: Alarm;
+
   constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
     super(scope, id);
 
@@ -72,10 +125,14 @@ export class MonitoredQueue extends Construct {
         maxReceiveCount: props.maxReceiveCount || 3,
       };
 
-    new Queue(this, 'Queue', {
+    this.deadLetterQueue = deadLetterQueue;
+
+    const queue = new Queue(this, 'Queue', {
       ...props.queueProps,
       deadLetterQueue,
     });
+
+    this.queue = queue;
 
     const alarm = new Alarm(this, 'DLQ-Alarm', {
       alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
@@ -85,29 +142,24 @@ export class MonitoredQueue extends Construct {
       treatMissingData: TreatMissingData.NOT_BREACHING,
     });
 
+    this.alarm = alarm;
+
     const topic = new Topic(this, 'Topic', {
       topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
     });
+
+    this.topic = topic;
 
     const snsAction = new SnsAction(topic);
 
     alarm.addAlarmAction(snsAction);
     alarm.addOkAction(snsAction);
 
-    props.emails
-      ? addEmailNotificationDestination(topic, props.emails)
-      : {};
-
-    const slackProps = props.slackProps;
-
-    slackProps
-      ? addSlackNotificationDestination(
-        this,
-        topic,
-        slackProps.slackToken,
-        slackProps.slackChannel,
-      )
-      : {};
+    for (const messageProvider of props.messagingProviders
+      ? props.messagingProviders
+      : []) {
+      messageProvider.deployProvider(this, topic);
+    }
   }
 }
 
@@ -122,8 +174,9 @@ function addSlackNotificationDestination(
   topic: Topic,
   slackToken: string,
   slackChannel: string,
+  name: string,
 ) {
-  const slackListener = new Function(scope, 'SlackNotificationLambda', {
+  const slackListener = new Function(scope, 'SlackListenerLambda' + name, {
     runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.ARM_64,
     code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),

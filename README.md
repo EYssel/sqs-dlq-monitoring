@@ -3,24 +3,27 @@
 - [sqs-dlq-monitoring](#sqs-dlq-monitoring)
 - [Getting Started](#getting-started)
   - [Example](#example)
-    - [Install the package:](#install-the-package)
+    - [Install the package with npm:](#install-the-package-with-npm)
+    - [Install the package with yarn:](#install-the-package-with-yarn)
     - [Import the construct into your stack:](#import-the-construct-into-your-stack)
-  - [API](#api)
-    - [`queueProps`](#queueprops)
-    - [`maxReceiveCount`](#maxreceivecount)
-    - [`messageThreshold`](#messagethreshold)
-    - [`evaluationThreshold`](#evaluationthreshold)
-    - [`emails`](#emails)
-    - [`slackProps`](#slackprops)
 - [Why?](#why)
+- [API](#api)
+  - [`queueProps`](#queueprops)
+  - [`maxReceiveCount`](#maxreceivecount)
+  - [`messageThreshold`](#messagethreshold)
+  - [`evaluationThreshold`](#evaluationthreshold)
+  - [`messagingProviders`](#messagingproviders)
+    - [1. `EmailProvider`](#1-emailprovider)
+    - [2. `SlackProvider`](#2-slackprovider)
 - [Deployed Infrastructure](#deployed-infrastructure)
 - [Setting up Email notifications](#setting-up-email-notifications)
-  - [`emails`](#emails-1)
+  - [`EmailProvider`](#emailprovider)
   - [Example](#example-1)
 - [Setting up Slack notifications](#setting-up-slack-notifications)
   - [Slack App](#slack-app)
-  - [`slackToken`](#slacktoken)
-  - [`slackChannel`](#slackchannel)
+  - [`SlackProvider`](#slackprovider)
+    - [`slackToken`](#slacktoken)
+    - [`slackChannel`](#slackchannel)
   - [Example](#example-2)
 - [Contributing](#contributing)
   - [How to get started with local development?](#how-to-get-started-with-local-development)
@@ -37,7 +40,7 @@ The following messaging locations are available:
 - Email
 - Slack
 
-___
+---
 
 # Getting Started
 
@@ -47,17 +50,17 @@ Here is an example for how to use this construct in your AWS CDK TypeScript proj
 
 After setting up your AWS CDK app.
 
-### Install the package:
+### Install the package with npm:
 
-```npm install sqs-dlq-monitoring```
+`npm install sqs-dlq-monitoring`
+
+### Install the package with yarn:
+
+`yarn add sqs-dlq-monitoring`
 
 ### Import the construct into your stack:
 
 ```ts
-import * as cdk from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { MonitoredQueue } from "sqs-dlq-monitoring";
-
 export class ShowcaseStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -69,23 +72,40 @@ export class ShowcaseStack extends cdk.Stack {
         queueName: 'ShowcaseQueue',
         visibilityTimeout: cdk.Duration.seconds(300),
       },
-      emails: [
-        `email@coolstuff.com`,
-        `support@coolstuff.com`,
+      messagingProviders: [
+        new EmailProvider([
+          'coolemail@example.com',
+          'coolemail2@example.com'
+         ]),
+        new SlackProvider('example_123', 'C012345', 'Example1'),
       ],
-      slackProps: {
-        slackToken: '...',
-        slackChannel: '...',
-      },
     });
   }
 }
-
 ```
 
-## API
+---
 
-### `queueProps`
+# Why?
+
+SQS is a common part of most AWS infrastructures, and it is recommended to deploy a DLQ alongside it to catch any failed messages.
+
+The problem is that a DLQ can only keep messages for a time of up to 14 days, and if this DLQ is not monitored, developers may not know that any messages have failed.
+
+These messages would then be deleted at the end of the retention period.
+
+This package aims to solve this problem by granting developers an easy way to deploy a solution to monitor and notify them if messages have failed.
+
+Sources:
+
+- https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html#sqs-dead-letter-queues-benefits
+- https://medium.com/lumigo/sqs-and-lambda-the-missing-guide-on-failure-modes-7e31644d8722#:~:text=SQS%20with%20Lambda.-,No%20DLQs,-The%20most%20common
+
+---
+
+# API
+
+## `queueProps`
 
 The standard properties of the SQS Queue Construct.
 
@@ -104,52 +124,47 @@ new MonitoredQueue(stack, 'ExampleQueue', {
       maxReceiveCount: 3,
     },
   },
-  emails: [
-    `...`,
+  messageProviders: [
+    ...
   ]
 });
 ```
 
-### `maxReceiveCount`
+## `maxReceiveCount`
 
 The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
 
-### `messageThreshold`
+## `messageThreshold`
 
 The threshold for the amount of messages that are in the DLQ which trigger the alarm
 
-### `evaluationThreshold`
+## `evaluationThreshold`
 
 The number of periods over which data is compared to the specified threshold.
 
-### `emails`
+## `messagingProviders`
 
-The emails to which the messages should be sent
+A list of messaging providers which will each be deployed as a destination for your messages.
 
-### `slackProps`
+The options are listed below:
 
-Properties for setting up Slack Messaging
+### 1. `EmailProvider`
+
+Sets up Email Messaging
+
+For info on setting this up see:
+
+[Setting Up Email Notifications](#setting-up-email-notifications)
+
+### 2. `SlackProvider`
+
+Sets up Slack Messaging
 
 For info on setting this up see:
 
 [Setting Up Slack Notifications](#setting-up-slack-notifications)
-___
 
-# Why?
-
-SQS is a common part of most AWS infrastructures, and it is recommended to deploy a DLQ alongside it to catch any failed messages.
-
-The problem is that a DLQ can only keep messages for a time of up to 14 days, and if this DLQ is not monitored, developers may not know that any messages have failed.
-
-These messages would then be deleted at the end of the retention period.
-
-This package aims to solve this problem by granting developers an easy way to deploy a solution to monitor and notify them if messages have failed.
-
-Sources:
-- https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html#sqs-dead-letter-queues-benefits
-- https://medium.com/lumigo/sqs-and-lambda-the-missing-guide-on-failure-modes-7e31644d8722#:~:text=SQS%20with%20Lambda.-,No%20DLQs,-The%20most%20common
-
-___
+---
 
 # Deployed Infrastructure
 
@@ -165,78 +180,99 @@ A representation of the infrastructure can be seen below.
 
 ![Infrastructure Diagram](./documentation/infrastructure_diagram.png)
 
-___
+---
 
 # Setting up Email notifications
-When using the construct the following parameter is available for setting up a Email notifications:
 
-- `emails`
+When using the construct the following parameter is used for setting up a Email notifications:
 
-## `emails`
-A list of emails can be provided to the `emails` parameter. 
+- [`messagingProviders`](#messagingproviders)
 
-Please note that a subscription request will be sent out to each email which needs to be accepted.
+The `messagingProviders` parameter requires a list of messaging providers of which one option is `EmailProvider`
 
-Be sure to check your Spam folder!
+## `EmailProvider`
+
+The email provider has a single parameter:
+
+`emails`
+
+Which expects a list of email addresses.
+
+These email addresses will be sent a "Subscription" email from AWS, which needs to be accepted.
+
+Be sure to check your spam folder
 
 ## Example
+
 ```ts
 {
   ...
-  emails: [
-    `email@coolstuff.com`,
-    `support@coolstuff.com`,
-    ...
+  messagingProviders: [
+    new EmailProvider(['testemail@test.com'])
   ],
-}
+  ...
+};
 ```
 
-___
+---
 
 # Setting up Slack notifications
-When using the construct the following parameters are available for setting up a Slack notification:
 
-In the `slackProps` property:
+When using the construct the following parameter is used for setting up a Email notifications:
 
-- `slackToken`
-- `slackChannel`
+- [`messagingProviders`](#messagingproviders)
+
+The `messagingProviders` parameter requires a list of messaging providers of which one option is `SlackProvider`
+
+First you need to setup a Slack App to obtain the necessary information:
+
+## Slack App
+
+To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
+
+A guide to do so can be found here https://api.slack.com/start/quickstart
+
+## `SlackProvider`
+
+The `SlackProvider` contains parameters for setting up Slack Messaging.
+
+### `slackToken`
+
+A Bot User token which will be provided to the `slackToken` parameter.
+
+The token requires the following scopes:
+
+- `chat.write`
+- `chat.write.public`
+
+See [Slack App](#slack-app)
+
+### `slackChannel`
+
+A channel that the bot will send messages to.
+
+The channel ID needs to be used as the `slackChannel` parameter.
 
 After being set up successfully you will receive messages that look like this when the alarm is triggered:
 
 ![Slack Example Messages](./documentation/slack-messages-example.png)
 
-## Slack App
-To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
-
-A guide to do so can be found here https://api.slack.com/start/quickstart
-
-
-## `slackToken`
-A Bot User token which will be provided to the `slackToken` parameter. 
-
-The token requires the following scopes: 
-  - `chat.write`
-  - `chat.write.public`
-
-## `slackChannel`
-A channel that the bot will send messages to. 
-
-The channel ID needs to be used as the `slackChannel` parameter.
+See [Slack App](#slack-app)
 
 ## Example
 
 ```ts
 {
   ...
-  slackProps: {
-    slackToken: "...",
-    slackChannel: "..."
-  }
+  messagingProviders: [
+    new SlackProvider('example_123', 'C012345', 'Example1'),
+    new SlackProvider('example_345', 'C543210', 'Example2'),
+  ],
   ...
 }
 ```
 
-___
+---
 
 # Contributing
 
@@ -270,7 +306,6 @@ Feel free to create Issues and PR's if you want to contribute to the project!
 
 4. Deploy to your personal AWS account to test
 
-
 # Credits
 
 Special thanks to the following persons / organisations who helped out directly and indirectly throughout the process.
@@ -284,4 +319,4 @@ Special thanks to the following persons / organisations who helped out directly 
   - Provided code-review.
 - Side-Project Society Discord Server members
   - A discord server set up to motivate each other to work on side-projects like this.
-  - It is invaluable to keep me motivated during the process, and to get things done.
+  - The discord server is invaluable to keep me motivated during the process.
