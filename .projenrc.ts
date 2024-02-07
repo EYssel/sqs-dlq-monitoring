@@ -21,6 +21,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   bundledDeps: ['axios'],
   // exclude lambda code in favour of custom esbuild compiling
   excludeTypescript: ['src/lambda/**/*', 'playground/**/*'],
+  majorVersion: 1,
 });
 project.npmignore!.exclude('scripts/');
 project.npmignore!.exclude('playground/');
