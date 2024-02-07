@@ -4,7 +4,9 @@ import { AlarmMessage } from '../alarmMessage';
 const SLACK_CHAT_POST_MESSAGE_ENDPOINT =
   'https://slack.com/api/chat.postMessage';
 
-export const handler = async (event) => {
+export const handler = async (event: {
+  Records: { Sns: { Message: string } }[];
+}) => {
   try {
     const message: AlarmMessage = JSON.parse(event.Records[0].Sns.Message);
 
@@ -52,5 +54,5 @@ function getMessageColor(message: AlarmMessage) {
 }
 
 function getMessageText(message: AlarmMessage) {
-  return `*State changed:*\n\n*_${message.OldStateValue}_*:arrow_right:*_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
+  return `*State changed:*\n\n*_${message.OldStateValue}_* :arrow_right: *_${message.NewStateValue}_*\n\n*Reason:*\n\n${message.NewStateReason}`;
 }
