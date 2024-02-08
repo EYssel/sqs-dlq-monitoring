@@ -34,13 +34,13 @@
     "organization": false
   },
   "devDependencies": {
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
     "aws-cdk-lib": "2.60.0",
     "constructs": "10.0.5",
-    "esbuild": "^0.19.11",
+    "esbuild": "^0.20.0",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
@@ -50,7 +50,7 @@
     "jsii-diff": "^1.94.0",
     "jsii-pacmak": "^1.94.0",
     "jsii-rosetta": "~5.3.8",
-    "projen": "^0.79.3",
+    "projen": "^0.79.9",
     "standard-version": "^9",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
@@ -61,7 +61,7 @@
     "constructs": "^10.0.5"
   },
   "dependencies": {
-    "axios": "^1.6.5"
+    "axios": "^1.6.7"
   },
   "bundledDependencies": [
     "axios"
