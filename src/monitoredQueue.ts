@@ -1,8 +1,15 @@
 import * as path from 'path';
-import { Alarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Alarm,
+  AlarmProps,
+  TreatMissingData,
+} from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Topic } from 'aws-cdk-lib/aws-sns';
+import {
+  Topic,
+  TopicProps,
+} from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
   LambdaSubscription,
@@ -62,24 +69,28 @@ export class EmailProvider implements IMessagingProvider {
 }
 
 export interface IMonitoredQueueProps {
-  /** The standard properties of the SQS Queue Construct
+  /**
+   * The standard properties of the SQS Queue Props to set the properties for the deployed queue
    * @required
    */
   readonly queueProps: QueueProps;
 
-  /** The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+  /**
+   * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
    * @default 3
    * @optional
    */
   readonly maxReceiveCount?: number;
 
-  /** The threshold for the amount of messages that are in the DLQ which trigger the alarm
+  /**
+   * The threshold for the amount of messages that are in the DLQ which trigger the alarm
    * @default 5
    * @optional
    */
   readonly messageThreshold?: number;
 
-  /** The number of periods over which data is compared to the specified threshold.
+  /**
+   * The number of periods over which data is compared to the specified threshold.
    * @default 1
    * @optional
    */
@@ -90,6 +101,22 @@ export interface IMonitoredQueueProps {
    * @optional
    */
   readonly messagingProviders?: IMessagingProvider[];
+
+  /**
+   * The standard SQS Queue Props which can be used to customise the deployed DLQ.
+   * The value of this property will be overriden if the queueProps.deadLetterQueue is provided.
+   */
+  readonly dlqProps?: QueueProps;
+
+  /**
+   * The standard CloudWatch Alarm props which can be used to customise the deployed alarm.
+   */
+  readonly alarmProps?: AlarmProps;
+
+  /**
+   * The standard SNS Topic properties which can be used to customise the deployed topic.
+   */
+  readonly topicProps?: TopicProps;
 }
 
 export class MonitoredQueue extends Construct {
@@ -116,14 +143,16 @@ export class MonitoredQueue extends Construct {
   constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
     super(scope, id);
 
-    const deadLetterQueue = props.queueProps.deadLetterQueue
-      ? props.queueProps.deadLetterQueue
-      : {
-        queue: new Queue(this, 'DeadLetterQueue', {
+    const deadLetterQueue = props.queueProps.deadLetterQueue || {
+      queue: new Queue(
+        this,
+        'DeadLetterQueue',
+        props.dlqProps || {
           queueName: `${props.queueProps.queueName}-dlq`,
-        }),
-        maxReceiveCount: props.maxReceiveCount || 3,
-      };
+        },
+      ),
+      maxReceiveCount: props.maxReceiveCount || 3,
+    };
 
     this.deadLetterQueue = deadLetterQueue;
 
@@ -134,19 +163,28 @@ export class MonitoredQueue extends Construct {
 
     this.queue = queue;
 
-    const alarm = new Alarm(this, 'DLQ-Alarm', {
-      alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
-      metric: deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
-      threshold: props.messageThreshold || 5,
-      evaluationPeriods: props.evaluationThreshold || 1,
-      treatMissingData: TreatMissingData.NOT_BREACHING,
-    });
+    const alarm = new Alarm(
+      this,
+      'DLQ-Alarm',
+      props.alarmProps || {
+        alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
+        metric:
+          deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
+        threshold: props.messageThreshold || 5,
+        evaluationPeriods: props.evaluationThreshold || 1,
+        treatMissingData: TreatMissingData.NOT_BREACHING,
+      },
+    );
 
     this.alarm = alarm;
 
-    const topic = new Topic(this, 'Topic', {
-      topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
-    });
+    const topic = new Topic(
+      this,
+      'Topic',
+      props.topicProps || {
+        topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
+      },
+    );
 
     this.topic = topic;
 
