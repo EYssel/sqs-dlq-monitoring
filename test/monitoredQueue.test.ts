@@ -49,24 +49,8 @@ describe('MonitoredQueue', () => {
         queueName: 'test',
       },
       dlqProps: {
-        queueName: `custom-dlq-name`,
+        queueName: 'custom-dlq-name',
         enforceSSL: true,
-      }
-    });
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 0);
-    expect(template.toJSON()).toMatchSnapshot();
-  });
-
-  test('should create a monitored queue with a custom Alarm using `alarmProps`', () => {
-    const stack = new Stack();
-    new MonitoredQueue(stack, 'test', {
-      queueProps: {
-        queueName: 'test',
       },
     });
 
@@ -85,9 +69,10 @@ describe('MonitoredQueue', () => {
         queueName: 'test',
       },
       topicProps: {
-        topicName: "test-topic-name",
-        
-      }
+        fifo: true,
+        topicName: 'test-topic-name',
+        contentBasedDeduplication: true,
+      },
     });
 
     const template = Template.fromStack(stack);

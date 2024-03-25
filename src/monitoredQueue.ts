@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   Alarm,
   AlarmProps,
@@ -5,14 +6,16 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Topic, TopicProps } from 'aws-cdk-lib/aws-sns';
+import {
+  Topic,
+  TopicProps,
+} from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
   LambdaSubscription,
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import * as path from 'path';
 
 export interface IMessagingProvider {
   deployProvider(scope: Construct, topic: Topic): void;
@@ -47,7 +50,7 @@ export class SlackProvider implements IMessagingProvider {
       topic,
       this.slackToken,
       this.slackChannel,
-      this.name
+      this.name,
     );
   }
 }
@@ -146,7 +149,7 @@ export class MonitoredQueue extends Construct {
         'DeadLetterQueue',
         props.dlqProps || {
           queueName: `${props.queueProps.queueName}-dlq`,
-        }
+        },
       ),
       maxReceiveCount: props.maxReceiveCount || 3,
     };
@@ -170,7 +173,7 @@ export class MonitoredQueue extends Construct {
         threshold: props.messageThreshold || 5,
         evaluationPeriods: props.evaluationThreshold || 1,
         treatMissingData: TreatMissingData.NOT_BREACHING,
-      }
+      },
     );
 
     this.alarm = alarm;
@@ -180,7 +183,7 @@ export class MonitoredQueue extends Construct {
       'Topic',
       props.topicProps || {
         topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
-      }
+      },
     );
 
     this.topic = topic;
@@ -209,7 +212,7 @@ function addSlackNotificationDestination(
   topic: Topic,
   slackToken: string,
   slackChannel: string,
-  name: string
+  name: string,
 ) {
   const slackListener = new Function(scope, 'SlackListenerLambda' + name, {
     runtime: Runtime.NODEJS_18_X,
