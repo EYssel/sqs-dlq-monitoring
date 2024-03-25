@@ -42,6 +42,62 @@ describe('MonitoredQueue', () => {
     expect(template.toJSON()).toMatchSnapshot();
   });
 
+  test('should create a monitored queue with a custom DLQ using `dlqProps`', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      dlqProps: {
+        queueName: `custom-dlq-name`,
+        enforceSSL: true,
+      }
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
+    template.resourceCountIs('AWS::SNS::Subscription', 0);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
+
+  test('should create a monitored queue with a custom Alarm using `alarmProps`', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
+    template.resourceCountIs('AWS::SNS::Subscription', 0);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
+
+  test('should create a monitored queue with a custom Topic using `topicProps`', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      topicProps: {
+        topicName: "test-topic-name",
+        
+      }
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
+    template.resourceCountIs('AWS::SNS::Subscription', 0);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
+
   test('should create a monitored queue with an email subscription', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
@@ -96,4 +152,5 @@ describe('MonitoredQueue', () => {
     template.resourceCountIs('AWS::SNS::Subscription', 3);
     expect(template.toJSON()).toMatchSnapshot();
   });
+
 });

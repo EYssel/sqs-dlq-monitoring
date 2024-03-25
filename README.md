@@ -15,6 +15,9 @@
   - [`messagingProviders`](#messagingproviders)
     - [1. `EmailProvider`](#1-emailprovider)
     - [2. `SlackProvider`](#2-slackprovider)
+  - [`dlqProps`](#dlqprops)
+  - [`alarmProps`](#alarmprops)
+  - [`topicProps`](#topicprops)
 - [Deployed Infrastructure](#deployed-infrastructure)
 - [Setting up Email notifications](#setting-up-email-notifications)
   - [`EmailProvider`](#emailprovider)
@@ -163,6 +166,19 @@ Sets up Slack Messaging
 For info on setting this up see:
 
 [Setting Up Slack Notifications](#setting-up-slack-notifications)
+
+## `dlqProps`
+
+The standard SQS Queue Props which can be used to customise the deployed DLQ. 
+The value of this property will be overriden if the queueProps.deadLetterQueue is provided.
+
+## `alarmProps`
+
+The standard CloudWatch Alarm props which can be used to customise the deployed alarm.
+
+## `topicProps`
+
+The standard SNS Topic properties which can be used to customise the deployed topic.
 
 ---
 
