@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   Alarm,
   AlarmProps,
@@ -12,7 +13,6 @@ import {
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import * as path from 'path';
 
 export interface IMessagingProvider {
   deployProvider(scope: Construct, topic: Topic): void;
