@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { MonitoredQueue } from '../src/index';
 import { EmailProvider, SlackProvider } from '../src/monitoredQueue';
@@ -52,6 +53,29 @@ describe('MonitoredQueue', () => {
         queueName: 'custom-dlq-name',
         enforceSSL: true,
       },
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::SQS::Queue', 2);
+    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    template.resourceCountIs('AWS::Lambda::Function', 0);
+    template.resourceCountIs('AWS::SNS::Subscription', 0);
+    expect(template.toJSON()).toMatchSnapshot();
+  });
+
+  test('should create a monitored queue with a custom Topic using `topic`', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      topic: new Topic(
+        stack,
+        'test-topic',
+        {
+          topicName: 'test',
+        },
+      ),
     });
 
     const template = Template.fromStack(stack);

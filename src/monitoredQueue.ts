@@ -1,4 +1,3 @@
-import * as path from 'path';
 import {
   Alarm,
   AlarmProps,
@@ -6,16 +5,14 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import {
-  Topic,
-  TopicProps,
-} from 'aws-cdk-lib/aws-sns';
+import { Topic, TopicProps } from 'aws-cdk-lib/aws-sns';
 import {
   EmailSubscription,
   LambdaSubscription,
 } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 export interface IMessagingProvider {
   deployProvider(scope: Construct, topic: Topic): void;
@@ -114,7 +111,13 @@ export interface IMonitoredQueueProps {
   readonly alarmProps?: AlarmProps;
 
   /**
+   * A custom topic property which allows the user to pass through a pre-existing topic.
+   */
+  readonly topic?: Topic;
+
+  /**
    * The standard SNS Topic properties which can be used to customise the deployed topic.
+   * This value is overriden if the `topic` property is provided.
    */
   readonly topicProps?: TopicProps;
 }
@@ -178,13 +181,15 @@ export class MonitoredQueue extends Construct {
 
     this.alarm = alarm;
 
-    const topic = new Topic(
-      this,
-      'Topic',
-      props.topicProps || {
-        topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
-      },
-    );
+    const topic =
+      props.topic ||
+      new Topic(
+        this,
+        'Topic',
+        props.topicProps || {
+          topicName: `${deadLetterQueue.queue.queueName}-alarm-topic`,
+        },
+      );
 
     this.topic = topic;
 
