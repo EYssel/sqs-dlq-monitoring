@@ -16,6 +16,7 @@
     - [1. `EmailProvider`](#1-emailprovider)
     - [2. `SlackProvider`](#2-slackprovider)
   - [`dlqProps`](#dlqprops)
+  - [`topic`](#topic)
   - [`topicProps`](#topicprops)
 - [Deployed Infrastructure](#deployed-infrastructure)
 - [Setting up Email notifications](#setting-up-email-notifications)
@@ -169,11 +170,16 @@ For info on setting this up see:
 ## `dlqProps`
 
 The standard SQS Queue Props which can be used to customise the deployed DLQ. 
-The value of this property will be overriden if the queueProps.deadLetterQueue is provided.
+The value of this property will be overriden if the `queueProps.deadLetterQueue` is provided.
+
+## `topic`
+
+A custom topic which allows the user to pass through a custom topic.
 
 ## `topicProps`
 
 The standard SNS Topic properties which can be used to customise the deployed topic.
+This value is overriden if the `topic` property is provided.
 
 ---
 
