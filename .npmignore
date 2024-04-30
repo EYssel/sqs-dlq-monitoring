@@ -26,3 +26,4 @@ scripts/
 playground/
 /.gitattributes
 /.projenrc.ts
+/projenrc
