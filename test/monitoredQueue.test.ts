@@ -1,12 +1,12 @@
 import { Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { MonitoredQueue } from '../src/index';
 import { EmailProvider, SlackProvider } from '../src/monitoredQueue';
 
 describe('MonitoredQueue', () => {
-  test('should create a monitored queue', () => {
+  describe('should create a basic monitored queue', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -15,13 +15,38 @@ describe('MonitoredQueue', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    expect(template.toJSON()).toMatchSnapshot();
+
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+        AlarmActions: [Match.anyValue()],
+        OKActions: [Match.anyValue()],
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with a custom DLQ', () => {
+  describe('should create a monitored queue with a custom DLQ', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -36,14 +61,42 @@ describe('MonitoredQueue', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 0);
-    expect(template.toJSON()).toMatchSnapshot();
+
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+        AlarmActions: [Match.anyValue()],
+        OKActions: [Match.anyValue()],
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should not create a SNS Subscription', () => {
+      template.resourceCountIs('AWS::SNS::Subscription', 0);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with a custom DLQ using `dlqProps`', () => {
+  describe('should create a monitored queue with a custom DLQ using `dlqProps`', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -56,60 +109,175 @@ describe('MonitoredQueue', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 0);
-    expect(template.toJSON()).toMatchSnapshot();
-  });
 
-  test('should create a monitored queue with a custom Topic using `topic`', () => {
-    const stack = new Stack();
-    new MonitoredQueue(stack, 'test', {
-      queueProps: {
-        queueName: 'test',
-      },
-      topic: new Topic(
-        stack,
-        'test-topic',
-        {
-          topicName: 'test',
+    test('should create an SQS Queue and a Dead-Letter Queue with a SSL policy', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
         },
-      ),
+      });
+
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'custom-dlq-name',
+      });
+
+      template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+        PolicyDocument: Match.objectLike({
+          Statement: [
+            {
+              Action: 'sqs:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
+              },
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
+              },
+            },
+          ],
+        }),
+      });
     });
 
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::SNS::Topic', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 0);
-    expect(template.toJSON()).toMatchSnapshot();
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+        AlarmActions: [Match.anyValue()],
+        OKActions: [Match.anyValue()],
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should not create a SNS Subscription', () => {
+      template.resourceCountIs('AWS::SNS::Subscription', 0);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with a custom Topic using `topicProps`', () => {
+  describe('should create a monitored queue with a custom Topic using `topic`', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
         queueName: 'test',
       },
-      topicProps: {
-        fifo: true,
-        topicName: 'test-topic-name',
-        contentBasedDeduplication: true,
-      },
+      topic: new Topic(stack, 'test-topic', {
+        topicName: 'test',
+      }),
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::SNS::Topic', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 0);
-    expect(template.toJSON()).toMatchSnapshot();
+
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+      });
+    });
+
+    test('should create a topic with provided custom properties', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        TopicName: Match.anyValue(),
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should not create a SNS Subscription', () => {
+      template.resourceCountIs('AWS::SNS::Subscription', 0);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with an email subscription', () => {
+  describe('should create a monitored queue with a custom Topic using `topicProps`', () => {
+    const stack = new Stack();
+    const topicProps = {
+      fifo: true,
+      topicName: 'test-topic-name',
+      contentBasedDeduplication: true,
+    };
+
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test',
+      },
+      topicProps,
+    });
+
+    const template = Template.fromStack(stack);
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+      });
+    });
+
+    test('should create a topic with provided custom properties', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        ContentBasedDeduplication: true,
+        FifoTopic: true,
+        TopicName: `${topicProps.topicName}.fifo`,
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should not create a SNS Subscription', () => {
+      template.resourceCountIs('AWS::SNS::Subscription', 0);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
+  });
+
+  describe('should create a monitored queue with an email subscription', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -118,15 +286,47 @@ describe('MonitoredQueue', () => {
       messagingProviders: [new EmailProvider(['testemail@test.com'])],
     });
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::SNS::Topic', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 0);
-    template.resourceCountIs('AWS::SNS::Subscription', 1);
-    expect(template.toJSON()).toMatchSnapshot();
+
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+      });
+    });
+
+    test('should create a default topic', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        TopicName: Match.anyValue(),
+      });
+    });
+
+    test('should not create a Lambda Function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('should create a single SNS Subscription', () => {
+      template.resourceCountIs('AWS::SNS::Subscription', 1);
+    });
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with a lambda SNS listener and Lambda Subscription', () => {
+  describe('should create a monitored queue with a Lambda SNS listener and Lambda Subscription', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -138,15 +338,43 @@ describe('MonitoredQueue', () => {
       ],
     });
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
+
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
     template.resourceCountIs('AWS::Lambda::Function', 3);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::SNS::Topic', 1);
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+      });
+    });
+
+    test('should create a default topic', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        TopicName: Match.anyValue(),
+      });
+    });
+
     template.resourceCountIs('AWS::SNS::Subscription', 2);
-    expect(template.toJSON()).toMatchSnapshot();
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
   });
 
-  test('should create a monitored queue with a lambda SNS listeners and Lambda Subscriptions, and email subscriptions', () => {
+  describe('should create a monitored queue with a Lambda SNS listeners and Lambda Subscriptions, and email subscriptions', () => {
     const stack = new Stack();
     new MonitoredQueue(stack, 'test', {
       queueProps: {
@@ -159,12 +387,39 @@ describe('MonitoredQueue', () => {
       ],
     });
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
-    template.resourceCountIs('AWS::SNS::Topic', 1);
-    template.resourceCountIs('AWS::Lambda::Function', 3);
-    template.resourceCountIs('AWS::CloudWatch::Alarm', 1);
-    template.resourceCountIs('AWS::SNS::Subscription', 3);
-    expect(template.toJSON()).toMatchSnapshot();
-  });
 
+    test('should create an SQS Queue and a Dead-Letter Queue', () => {
+      template.resourceCountIs('AWS::SQS::Queue', 2);
+      template.hasResourceProperties('AWS::SQS::Queue', {
+        QueueName: 'test',
+        RedrivePolicy: {
+          deadLetterTargetArn: Match.anyValue(),
+          maxReceiveCount: 3,
+        },
+      });
+    });
+
+    test('should create a default topic', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        TopicName: Match.anyValue(),
+      });
+    });
+
+    template.resourceCountIs('AWS::Lambda::Function', 3);
+
+    test('should create a CloudWatch Alarm', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        MetricName: 'ApproximateNumberOfMessagesVisible',
+        Threshold: 5,
+      });
+    });
+
+    template.resourceCountIs('AWS::SNS::Subscription', 3);
+
+    test('should match the snapshot', () => {
+      expect(template.toJSON()).toMatchSnapshot();
+    });
+  });
 });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MonitoredQueue should create a monitored queue 1`] = `
+exports[`MonitoredQueue should create a basic monitored queue should match the snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -133,548 +133,7 @@ exports[`MonitoredQueue should create a monitored queue 1`] = `
 }
 `;
 
-exports[`MonitoredQueue should create a monitored queue with a custom DLQ 1`] = `
-{
-  "Parameters": {
-    "BootstrapVersion": {
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
-      "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-  },
-  "Resources": {
-    "DLQ581697C4": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "custom-dlq",
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testDLQAlarmFF94B263": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "AlarmName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "DLQ581697C4",
-                  "QueueName",
-                ],
-              },
-              "-alarm",
-            ],
-          ],
-        },
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": [
-          {
-            "Name": "QueueName",
-            "Value": {
-              "Fn::GetAtt": [
-                "DLQ581697C4",
-                "QueueName",
-              ],
-            },
-          },
-        ],
-        "EvaluationPeriods": 1,
-        "MetricName": "ApproximateNumberOfMessagesVisible",
-        "Namespace": "AWS/SQS",
-        "OKActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "Period": 300,
-        "Statistic": "Maximum",
-        "Threshold": 5,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "testQueueA1A031F3": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test",
-        "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "DLQ581697C4",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 3,
-        },
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testTopic20AA7407": {
-      "Properties": {
-        "TopicName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "DLQ581697C4",
-                  "QueueName",
-                ],
-              },
-              "-alarm-topic",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::SNS::Topic",
-    },
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                  ],
-                  {
-                    "Ref": "BootstrapVersion",
-                  },
-                ],
-              },
-            ],
-          },
-          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
-        },
-      ],
-    },
-  },
-}
-`;
-
-exports[`MonitoredQueue should create a monitored queue with a custom DLQ using \`dlqProps\` 1`] = `
-{
-  "Parameters": {
-    "BootstrapVersion": {
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
-      "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-  },
-  "Resources": {
-    "testDLQAlarmFF94B263": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "AlarmName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "testDeadLetterQueueA5F7D72D",
-                  "QueueName",
-                ],
-              },
-              "-alarm",
-            ],
-          ],
-        },
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": [
-          {
-            "Name": "QueueName",
-            "Value": {
-              "Fn::GetAtt": [
-                "testDeadLetterQueueA5F7D72D",
-                "QueueName",
-              ],
-            },
-          },
-        ],
-        "EvaluationPeriods": 1,
-        "MetricName": "ApproximateNumberOfMessagesVisible",
-        "Namespace": "AWS/SQS",
-        "OKActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "Period": 300,
-        "Statistic": "Maximum",
-        "Threshold": 5,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "testDeadLetterQueueA5F7D72D": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "custom-dlq-name",
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testDeadLetterQueuePolicy14C080A7": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sqs:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": {
-                "Fn::GetAtt": [
-                  "testDeadLetterQueueA5F7D72D",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": [
-          {
-            "Ref": "testDeadLetterQueueA5F7D72D",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
-    },
-    "testQueueA1A031F3": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test",
-        "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "testDeadLetterQueueA5F7D72D",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 3,
-        },
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testTopic20AA7407": {
-      "Properties": {
-        "TopicName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "testDeadLetterQueueA5F7D72D",
-                  "QueueName",
-                ],
-              },
-              "-alarm-topic",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::SNS::Topic",
-    },
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                  ],
-                  {
-                    "Ref": "BootstrapVersion",
-                  },
-                ],
-              },
-            ],
-          },
-          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
-        },
-      ],
-    },
-  },
-}
-`;
-
-exports[`MonitoredQueue should create a monitored queue with a custom Topic using \`topic\` 1`] = `
-{
-  "Parameters": {
-    "BootstrapVersion": {
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
-      "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-  },
-  "Resources": {
-    "testDLQAlarmFF94B263": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "testtopicB3D54793",
-          },
-        ],
-        "AlarmName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "testDeadLetterQueueA5F7D72D",
-                  "QueueName",
-                ],
-              },
-              "-alarm",
-            ],
-          ],
-        },
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": [
-          {
-            "Name": "QueueName",
-            "Value": {
-              "Fn::GetAtt": [
-                "testDeadLetterQueueA5F7D72D",
-                "QueueName",
-              ],
-            },
-          },
-        ],
-        "EvaluationPeriods": 1,
-        "MetricName": "ApproximateNumberOfMessagesVisible",
-        "Namespace": "AWS/SQS",
-        "OKActions": [
-          {
-            "Ref": "testtopicB3D54793",
-          },
-        ],
-        "Period": 300,
-        "Statistic": "Maximum",
-        "Threshold": 5,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "testDeadLetterQueueA5F7D72D": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test-dlq",
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testQueueA1A031F3": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test",
-        "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "testDeadLetterQueueA5F7D72D",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 3,
-        },
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testtopicB3D54793": {
-      "Properties": {
-        "TopicName": "test",
-      },
-      "Type": "AWS::SNS::Topic",
-    },
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                  ],
-                  {
-                    "Ref": "BootstrapVersion",
-                  },
-                ],
-              },
-            ],
-          },
-          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
-        },
-      ],
-    },
-  },
-}
-`;
-
-exports[`MonitoredQueue should create a monitored queue with a custom Topic using \`topicProps\` 1`] = `
-{
-  "Parameters": {
-    "BootstrapVersion": {
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
-      "Type": "AWS::SSM::Parameter::Value<String>",
-    },
-  },
-  "Resources": {
-    "testDLQAlarmFF94B263": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "AlarmName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": [
-                  "testDeadLetterQueueA5F7D72D",
-                  "QueueName",
-                ],
-              },
-              "-alarm",
-            ],
-          ],
-        },
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": [
-          {
-            "Name": "QueueName",
-            "Value": {
-              "Fn::GetAtt": [
-                "testDeadLetterQueueA5F7D72D",
-                "QueueName",
-              ],
-            },
-          },
-        ],
-        "EvaluationPeriods": 1,
-        "MetricName": "ApproximateNumberOfMessagesVisible",
-        "Namespace": "AWS/SQS",
-        "OKActions": [
-          {
-            "Ref": "testTopic20AA7407",
-          },
-        ],
-        "Period": 300,
-        "Statistic": "Maximum",
-        "Threshold": 5,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "testDeadLetterQueueA5F7D72D": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test-dlq",
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testQueueA1A031F3": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "QueueName": "test",
-        "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "testDeadLetterQueueA5F7D72D",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 3,
-        },
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "testTopic20AA7407": {
-      "Properties": {
-        "ContentBasedDeduplication": true,
-        "FifoTopic": true,
-        "TopicName": "test-topic-name.fifo",
-      },
-      "Type": "AWS::SNS::Topic",
-    },
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                  ],
-                  {
-                    "Ref": "BootstrapVersion",
-                  },
-                ],
-              },
-            ],
-          },
-          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
-        },
-      ],
-    },
-  },
-}
-`;
-
-exports[`MonitoredQueue should create a monitored queue with a lambda SNS listener and Lambda Subscription 1`] = `
+exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listener and Lambda Subscription should match the snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -1117,7 +576,7 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
 }
 `;
 
-exports[`MonitoredQueue should create a monitored queue with a lambda SNS listeners and Lambda Subscriptions, and email subscriptions 1`] = `
+exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listeners and Lambda Subscriptions, and email subscriptions should match the snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -1570,7 +1029,548 @@ exports[`MonitoredQueue should create a monitored queue with a lambda SNS listen
 }
 `;
 
-exports[`MonitoredQueue should create a monitored queue with an email subscription 1`] = `
+exports[`MonitoredQueue should create a monitored queue with a custom DLQ should match the snapshot 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "DLQ581697C4": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "custom-dlq",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testDLQAlarmFF94B263": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "DLQ581697C4",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "DLQ581697C4",
+                "QueueName",
+              ],
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "testQueueA1A031F3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DLQ581697C4",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 3,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testTopic20AA7407": {
+      "Properties": {
+        "TopicName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "DLQ581697C4",
+                  "QueueName",
+                ],
+              },
+              "-alarm-topic",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`MonitoredQueue should create a monitored queue with a custom DLQ using \`dlqProps\` should match the snapshot 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "testDLQAlarmFF94B263": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "testDeadLetterQueueA5F7D72D",
+                "QueueName",
+              ],
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "testDeadLetterQueueA5F7D72D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "custom-dlq-name",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testDeadLetterQueuePolicy14C080A7": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "testDeadLetterQueueA5F7D72D",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "testQueueA1A031F3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "testDeadLetterQueueA5F7D72D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 3,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testTopic20AA7407": {
+      "Properties": {
+        "TopicName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm-topic",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`MonitoredQueue should create a monitored queue with a custom Topic using \`topic\` should match the snapshot 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "testDLQAlarmFF94B263": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "testtopicB3D54793",
+          },
+        ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "testDeadLetterQueueA5F7D72D",
+                "QueueName",
+              ],
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testtopicB3D54793",
+          },
+        ],
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "testDeadLetterQueueA5F7D72D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test-dlq",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testQueueA1A031F3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "testDeadLetterQueueA5F7D72D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 3,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testtopicB3D54793": {
+      "Properties": {
+        "TopicName": "test",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`MonitoredQueue should create a monitored queue with a custom Topic using \`topicProps\` should match the snapshot 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "testDLQAlarmFF94B263": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "AlarmName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "testDeadLetterQueueA5F7D72D",
+                  "QueueName",
+                ],
+              },
+              "-alarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "testDeadLetterQueueA5F7D72D",
+                "QueueName",
+              ],
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "OKActions": [
+          {
+            "Ref": "testTopic20AA7407",
+          },
+        ],
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "testDeadLetterQueueA5F7D72D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test-dlq",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testQueueA1A031F3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "QueueName": "test",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "testDeadLetterQueueA5F7D72D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 3,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testTopic20AA7407": {
+      "Properties": {
+        "ContentBasedDeduplication": true,
+        "FifoTopic": true,
+        "TopicName": "test-topic-name.fifo",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`MonitoredQueue should create a monitored queue with an email subscription should match the snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
