@@ -40,7 +40,7 @@
     "@typescript-eslint/parser": "^6",
     "aws-cdk-lib": "2.60.0",
     "constructs": "10.0.5",
-    "esbuild": "^0.21.1",
+    "esbuild": "^0.21.3",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
@@ -50,9 +50,9 @@
     "jsii-diff": "^1.98.0",
     "jsii-pacmak": "^1.98.0",
     "jsii-rosetta": "~5.3.8",
-    "projen": "^0.81.8",
+    "projen": "^0.81.15",
     "standard-version": "^9",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.1.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
@@ -61,7 +61,7 @@
     "constructs": "^10.0.5"
   },
   "dependencies": {
-    "axios": "^1.6.8"
+    "axios": "^1.7.2"
   },
   "bundledDependencies": [
     "axios"
@@ -76,7 +76,7 @@
     "testMatch": [
       "**/?(*.)+(spec|test).+(ts|tsx|js)",
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",
-      "<rootDir>/(test|src)/**/*(*.)@(spec|test).ts?(x)"
+      "<rootDir>/@(test|src)/**/*(*.)@(spec|test).ts?(x)"
     ],
     "clearMocks": true,
     "collectCoverage": true,
