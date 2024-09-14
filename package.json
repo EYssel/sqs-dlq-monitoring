@@ -39,7 +39,6 @@
     "@typescript-eslint/eslint-plugin": "^7",
     "@typescript-eslint/parser": "^7",
     "aws-cdk-lib": "2.60.0",
-    "commit-and-tag-version": "^12",
     "constructs": "10.0.5",
     "esbuild": "^0.23.1",
     "eslint": "^8",
@@ -52,6 +51,7 @@
     "jsii-pacmak": "^1.103.1",
     "jsii-rosetta": "~5.3.8",
     "projen": "^0.86.6",
+    "standard-version": "^9",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
