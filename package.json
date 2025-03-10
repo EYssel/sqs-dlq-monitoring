@@ -52,17 +52,17 @@
     "jsii-diff": "^1.108.0",
     "jsii-pacmak": "^1.108.0",
     "jsii-rosetta": "~5.3.8",
-    "projen": "^0.91.13",
+    "projen": "^0.91.14",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.60.0",
     "constructs": "^10.0.5"
   },
   "dependencies": {
-    "axios": "^1.7.9"
+    "axios": "^1.8.2"
   },
   "bundledDependencies": [
     "axios"
