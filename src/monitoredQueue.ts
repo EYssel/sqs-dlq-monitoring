@@ -220,7 +220,7 @@ function addSlackNotificationDestination(
   name: string,
 ) {
   const slackListener = new Function(scope, 'SlackListenerLambda' + name, {
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_22_X,
     architecture: Architecture.ARM_64,
     code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
     handler: 'index.handler',
