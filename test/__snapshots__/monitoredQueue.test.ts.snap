@@ -135,130 +135,6 @@ exports[`MonitoredQueue should create a basic monitored queue should match the s
 
 exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listener and Lambda Subscription should match the snapshot 1`] = `
 {
-  "Mappings": {
-    "LatestNodeRuntimeMap": {
-      "af-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-east-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-4": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-5": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-7": {
-        "value": "nodejs20.x",
-      },
-      "ca-central-1": {
-        "value": "nodejs20.x",
-      },
-      "ca-west-1": {
-        "value": "nodejs20.x",
-      },
-      "cn-north-1": {
-        "value": "nodejs18.x",
-      },
-      "cn-northwest-1": {
-        "value": "nodejs18.x",
-      },
-      "eu-central-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-central-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-isoe-west-1": {
-        "value": "nodejs18.x",
-      },
-      "eu-north-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-3": {
-        "value": "nodejs20.x",
-      },
-      "il-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-south-1": {
-        "value": "nodejs20.x",
-      },
-      "mx-central-1": {
-        "value": "nodejs20.x",
-      },
-      "sa-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-2": {
-        "value": "nodejs20.x",
-      },
-      "us-gov-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-gov-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-iso-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-iso-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-isob-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-west-1": {
-        "value": "nodejs20.x",
-      },
-      "us-west-2": {
-        "value": "nodejs20.x",
-      },
-    },
-  },
   "Parameters": {
     "BootstrapVersion": {
       "Default": "/cdk-bootstrap/hnb659fds/version",
@@ -267,93 +143,6 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
     },
   },
   "Resources": {
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
-      "DependsOn": [
-        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
-        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-            "Arn",
-          ],
-        },
-        "Runtime": {
-          "Fn::FindInMap": [
-            "LatestNodeRuntimeMap",
-            {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:PutRetentionPolicy",
-                "logs:DeleteRetentionPolicy",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
-        "Roles": [
-          {
-            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "testDLQAlarmFF94B263": {
       "Properties": {
         "AlarmActions": [
@@ -427,9 +216,9 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
-    "testSlackListenerLambdatest16C2A39C9": {
+    "testSlackListenerLambda27868B6D": {
       "DependsOn": [
-        "testSlackListenerLambdatest1ServiceRole93D55F98",
+        "testSlackListenerLambdaServiceRole53364B9A",
       ],
       "Properties": {
         "Architectures": [
@@ -439,18 +228,22 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "417ac0e2303ccc5388faac79d9c70f8509c07331fd87d4c305758ce697194a23.zip",
+          "S3Key": "59c5a9168f6eaee0aa031bf35ec8aac577a2f76da350f4ee5f89031ca086dd9d.zip",
         },
         "Environment": {
           "Variables": {
-            "SLACK_BOT_TOKEN": "test_token",
-            "SLACK_CHANNEL": "test_channel",
+            "SLACK_CONFIGS": "[{"token":"test_token","channel":"test_channel"},{"token":"test_token2","channel":"test_channel2"}]",
           },
         },
         "Handler": "index.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "testSlackListenerLogGroup41A9D03F",
+          },
+        },
         "Role": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest1ServiceRole93D55F98",
+            "testSlackListenerLambdaServiceRole53364B9A",
             "Arn",
           ],
         },
@@ -458,12 +251,12 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::Lambda::Function",
     },
-    "testSlackListenerLambdatest1AllowInvoketestTopicFC445456C954873C": {
+    "testSlackListenerLambdaAllowInvoketestTopicFC44545605AEA5DA": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest16C2A39C9",
+            "testSlackListenerLambda27868B6D",
             "Arn",
           ],
         },
@@ -474,30 +267,7 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "testSlackListenerLambdatest1LogRetentionC81D2B52": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "testSlackListenerLambdatest16C2A39C9",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 7,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "testSlackListenerLambdatest1ServiceRole93D55F98": {
+    "testSlackListenerLambdaServiceRole53364B9A": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -528,11 +298,11 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::IAM::Role",
     },
-    "testSlackListenerLambdatest1Topic284B3A01": {
+    "testSlackListenerLambdaTopic4CC6D6F4": {
       "Properties": {
         "Endpoint": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest16C2A39C9",
+            "testSlackListenerLambda27868B6D",
             "Arn",
           ],
         },
@@ -543,121 +313,13 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::SNS::Subscription",
     },
-    "testSlackListenerLambdatest264B06AA2": {
-      "DependsOn": [
-        "testSlackListenerLambdatest2ServiceRole02D6F7E5",
-      ],
+    "testSlackListenerLogGroup41A9D03F": {
+      "DeletionPolicy": "Delete",
       "Properties": {
-        "Architectures": [
-          "arm64",
-        ],
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "417ac0e2303ccc5388faac79d9c70f8509c07331fd87d4c305758ce697194a23.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "SLACK_BOT_TOKEN": "test_token2",
-            "SLACK_CHANNEL": "test_channel2",
-          },
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest2ServiceRole02D6F7E5",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs22.x",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "testSlackListenerLambdatest2AllowInvoketestTopicFC445456886196C2": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest264B06AA2",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "testTopic20AA7407",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "testSlackListenerLambdatest2LogRetentionAB8E8302": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "testSlackListenerLambdatest264B06AA2",
-              },
-            ],
-          ],
-        },
         "RetentionInDays": 7,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
       },
-      "Type": "Custom::LogRetention",
-    },
-    "testSlackListenerLambdatest2ServiceRole02D6F7E5": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "testSlackListenerLambdatest2TopicB232AB71": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest264B06AA2",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "testTopic20AA7407",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
     },
     "testTopic20AA7407": {
       "Properties": {
@@ -711,130 +373,6 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
 
 exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listeners and Lambda Subscriptions, and email subscriptions should match the snapshot 1`] = `
 {
-  "Mappings": {
-    "LatestNodeRuntimeMap": {
-      "af-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-east-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-4": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-5": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-7": {
-        "value": "nodejs20.x",
-      },
-      "ca-central-1": {
-        "value": "nodejs20.x",
-      },
-      "ca-west-1": {
-        "value": "nodejs20.x",
-      },
-      "cn-north-1": {
-        "value": "nodejs18.x",
-      },
-      "cn-northwest-1": {
-        "value": "nodejs18.x",
-      },
-      "eu-central-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-central-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-isoe-west-1": {
-        "value": "nodejs18.x",
-      },
-      "eu-north-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-3": {
-        "value": "nodejs20.x",
-      },
-      "il-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-south-1": {
-        "value": "nodejs20.x",
-      },
-      "mx-central-1": {
-        "value": "nodejs20.x",
-      },
-      "sa-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-2": {
-        "value": "nodejs20.x",
-      },
-      "us-gov-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-gov-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-iso-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-iso-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-isob-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-west-1": {
-        "value": "nodejs20.x",
-      },
-      "us-west-2": {
-        "value": "nodejs20.x",
-      },
-    },
-  },
   "Parameters": {
     "BootstrapVersion": {
       "Default": "/cdk-bootstrap/hnb659fds/version",
@@ -843,93 +381,6 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
     },
   },
   "Resources": {
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
-      "DependsOn": [
-        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
-        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-            "Arn",
-          ],
-        },
-        "Runtime": {
-          "Fn::FindInMap": [
-            "LatestNodeRuntimeMap",
-            {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:PutRetentionPolicy",
-                "logs:DeleteRetentionPolicy",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
-        "Roles": [
-          {
-            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "testDLQAlarmFF94B263": {
       "Properties": {
         "AlarmActions": [
@@ -1003,9 +454,9 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
-    "testSlackListenerLambdatest16C2A39C9": {
+    "testSlackListenerLambda27868B6D": {
       "DependsOn": [
-        "testSlackListenerLambdatest1ServiceRole93D55F98",
+        "testSlackListenerLambdaServiceRole53364B9A",
       ],
       "Properties": {
         "Architectures": [
@@ -1015,18 +466,22 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "417ac0e2303ccc5388faac79d9c70f8509c07331fd87d4c305758ce697194a23.zip",
+          "S3Key": "59c5a9168f6eaee0aa031bf35ec8aac577a2f76da350f4ee5f89031ca086dd9d.zip",
         },
         "Environment": {
           "Variables": {
-            "SLACK_BOT_TOKEN": "test_token",
-            "SLACK_CHANNEL": "test_channel",
+            "SLACK_CONFIGS": "[{"token":"test_token","channel":"test_channel"},{"token":"test_token2","channel":"test_channel2"}]",
           },
         },
         "Handler": "index.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "testSlackListenerLogGroup41A9D03F",
+          },
+        },
         "Role": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest1ServiceRole93D55F98",
+            "testSlackListenerLambdaServiceRole53364B9A",
             "Arn",
           ],
         },
@@ -1034,12 +489,12 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::Lambda::Function",
     },
-    "testSlackListenerLambdatest1AllowInvoketestTopicFC445456C954873C": {
+    "testSlackListenerLambdaAllowInvoketestTopicFC44545605AEA5DA": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest16C2A39C9",
+            "testSlackListenerLambda27868B6D",
             "Arn",
           ],
         },
@@ -1050,30 +505,7 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "testSlackListenerLambdatest1LogRetentionC81D2B52": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "testSlackListenerLambdatest16C2A39C9",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 7,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "testSlackListenerLambdatest1ServiceRole93D55F98": {
+    "testSlackListenerLambdaServiceRole53364B9A": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -1104,11 +536,11 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::IAM::Role",
     },
-    "testSlackListenerLambdatest1Topic284B3A01": {
+    "testSlackListenerLambdaTopic4CC6D6F4": {
       "Properties": {
         "Endpoint": {
           "Fn::GetAtt": [
-            "testSlackListenerLambdatest16C2A39C9",
+            "testSlackListenerLambda27868B6D",
             "Arn",
           ],
         },
@@ -1119,121 +551,13 @@ exports[`MonitoredQueue should create a monitored queue with a Lambda SNS listen
       },
       "Type": "AWS::SNS::Subscription",
     },
-    "testSlackListenerLambdatest264B06AA2": {
-      "DependsOn": [
-        "testSlackListenerLambdatest2ServiceRole02D6F7E5",
-      ],
+    "testSlackListenerLogGroup41A9D03F": {
+      "DeletionPolicy": "Delete",
       "Properties": {
-        "Architectures": [
-          "arm64",
-        ],
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "417ac0e2303ccc5388faac79d9c70f8509c07331fd87d4c305758ce697194a23.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "SLACK_BOT_TOKEN": "test_token2",
-            "SLACK_CHANNEL": "test_channel2",
-          },
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest2ServiceRole02D6F7E5",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs22.x",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "testSlackListenerLambdatest2AllowInvoketestTopicFC445456886196C2": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest264B06AA2",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "testTopic20AA7407",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "testSlackListenerLambdatest2LogRetentionAB8E8302": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "testSlackListenerLambdatest264B06AA2",
-              },
-            ],
-          ],
-        },
         "RetentionInDays": 7,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
       },
-      "Type": "Custom::LogRetention",
-    },
-    "testSlackListenerLambdatest2ServiceRole02D6F7E5": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "testSlackListenerLambdatest2TopicB232AB71": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "testSlackListenerLambdatest264B06AA2",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "testTopic20AA7407",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
     },
     "testTopic20AA7407": {
       "Properties": {
