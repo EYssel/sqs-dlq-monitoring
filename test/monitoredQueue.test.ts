@@ -1,7 +1,8 @@
-import { Stack } from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Stack, Aspects } from 'aws-cdk-lib';
+import { Match, Template, Annotations } from 'aws-cdk-lib/assertions';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { AwsSolutionsChecks } from 'cdk-nag';
 import { MonitoredQueue } from '../src/index';
 import { EmailProvider, SlackProvider } from '../src/monitoredQueue';
 
@@ -420,6 +421,34 @@ describe('MonitoredQueue', () => {
 
     test('should match the snapshot', () => {
       expect(template.toJSON()).toMatchSnapshot();
+    });
+  });
+
+  describe('cdk-nag compliance', () => {
+    test('should comply with AwsSolutionsChecks', () => {
+      const stack = new Stack();
+      new MonitoredQueue(stack, 'test', {
+        queueProps: {
+          queueName: 'test',
+        },
+        messagingProviders: [
+          new SlackProvider('test_token', 'test_channel', 'test1'),
+        ],
+      });
+
+      Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
+
+      const errors = Annotations.fromStack(stack).findError(
+        '*',
+        Match.stringLikeRegexp('AwsSolutions-.*'),
+      );
+      const warnings = Annotations.fromStack(stack).findWarning(
+        '*',
+        Match.stringLikeRegexp('AwsSolutions-.*'),
+      );
+
+      expect(errors).toHaveLength(0);
+      expect(warnings).toHaveLength(0);
     });
   });
 });

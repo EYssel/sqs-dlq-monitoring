@@ -34,12 +34,15 @@
     "organization": false
   },
   "devDependencies": {
+    "@aws-cdk/integ-runner": "^2.168.0",
+    "@aws-cdk/integ-tests-alpha": "2.168.0-alpha.0",
     "@stylistic/eslint-plugin": "^2",
     "@types/jest": "^29.5.14",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "aws-cdk-lib": "2.168.0",
+    "cdk-nag": "2.34.0",
     "commit-and-tag-version": "^12",
     "constructs": "10.5.1",
     "esbuild": "^0.28.0",
@@ -59,6 +62,7 @@
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.168.0",
+    "cdk-nag": "^2.34.0",
     "constructs": "^10.5.1"
   },
   "dependencies": {
