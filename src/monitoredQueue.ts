@@ -166,16 +166,21 @@ export class MonitoredQueue extends Construct {
 
     this.queue = queue;
 
+    const defaults = {
+      alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
+      metric:
+        deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
+      threshold: props.messageThreshold || 5,
+      evaluationPeriods: props.evaluationThreshold || 1,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+    };
+
     const alarm = new Alarm(
       this,
       'DLQ-Alarm',
-      props.alarmProps || {
-        alarmName: `${deadLetterQueue.queue.queueName}-alarm`,
-        metric:
-          deadLetterQueue.queue.metricApproximateNumberOfMessagesVisible(),
-        threshold: props.messageThreshold || 5,
-        evaluationPeriods: props.evaluationThreshold || 1,
-        treatMissingData: TreatMissingData.NOT_BREACHING,
+      {
+        ...defaults,
+        ...props.alarmProps,
       },
     );
 
