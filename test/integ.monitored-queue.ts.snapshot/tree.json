@@ -1,0 +1,271 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "IntegMonitoredQueueStack": {
+        "id": "IntegMonitoredQueueStack",
+        "path": "IntegMonitoredQueueStack",
+        "children": {
+          "MonitoredQueue": {
+            "id": "MonitoredQueue",
+            "path": "IntegMonitoredQueueStack/MonitoredQueue",
+            "children": {
+              "DeadLetterQueue": {
+                "id": "DeadLetterQueue",
+                "path": "IntegMonitoredQueueStack/MonitoredQueue/DeadLetterQueue",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegMonitoredQueueStack/MonitoredQueue/DeadLetterQueue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                      "aws:cdk:cloudformation:props": {
+                        "queueName": "integ-test-queue-dlq"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                      "version": "2.168.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                  "version": "2.168.0"
+                }
+              },
+              "Queue": {
+                "id": "Queue",
+                "path": "IntegMonitoredQueueStack/MonitoredQueue/Queue",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegMonitoredQueueStack/MonitoredQueue/Queue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                      "aws:cdk:cloudformation:props": {
+                        "queueName": "integ-test-queue",
+                        "redrivePolicy": {
+                          "deadLetterTargetArn": {
+                            "Fn::GetAtt": [
+                              "MonitoredQueueDeadLetterQueue7EB06921",
+                              "Arn"
+                            ]
+                          },
+                          "maxReceiveCount": 3
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                      "version": "2.168.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                  "version": "2.168.0"
+                }
+              },
+              "DLQ-Alarm": {
+                "id": "DLQ-Alarm",
+                "path": "IntegMonitoredQueueStack/MonitoredQueue/DLQ-Alarm",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegMonitoredQueueStack/MonitoredQueue/DLQ-Alarm/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                      "aws:cdk:cloudformation:props": {
+                        "alarmActions": [
+                          {
+                            "Ref": "MonitoredQueueTopic864F4F75"
+                          }
+                        ],
+                        "alarmName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::GetAtt": [
+                                  "MonitoredQueueDeadLetterQueue7EB06921",
+                                  "QueueName"
+                                ]
+                              },
+                              "-alarm"
+                            ]
+                          ]
+                        },
+                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                        "dimensions": [
+                          {
+                            "name": "QueueName",
+                            "value": {
+                              "Fn::GetAtt": [
+                                "MonitoredQueueDeadLetterQueue7EB06921",
+                                "QueueName"
+                              ]
+                            }
+                          }
+                        ],
+                        "evaluationPeriods": 1,
+                        "metricName": "ApproximateNumberOfMessagesVisible",
+                        "namespace": "AWS/SQS",
+                        "okActions": [
+                          {
+                            "Ref": "MonitoredQueueTopic864F4F75"
+                          }
+                        ],
+                        "period": 300,
+                        "statistic": "Maximum",
+                        "threshold": 3,
+                        "treatMissingData": "notBreaching"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                      "version": "2.168.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "version": "2.168.0"
+                }
+              },
+              "Topic": {
+                "id": "Topic",
+                "path": "IntegMonitoredQueueStack/MonitoredQueue/Topic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegMonitoredQueueStack/MonitoredQueue/Topic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "topicName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::GetAtt": [
+                                  "MonitoredQueueDeadLetterQueue7EB06921",
+                                  "QueueName"
+                                ]
+                              },
+                              "-alarm-topic"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                      "version": "2.168.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Topic",
+                  "version": "2.168.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.5.1"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "IntegMonitoredQueueStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.168.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "IntegMonitoredQueueStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.168.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.168.0"
+        }
+      },
+      "MonitoredQueueInteg": {
+        "id": "MonitoredQueueInteg",
+        "path": "MonitoredQueueInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "MonitoredQueueInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MonitoredQueueInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.5.1"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "MonitoredQueueInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "MonitoredQueueInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "2.168.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "MonitoredQueueInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "2.168.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "2.168.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "2.168.0-alpha.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "2.168.0-alpha.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.5.1"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.168.0"
+    }
+  }
+}
