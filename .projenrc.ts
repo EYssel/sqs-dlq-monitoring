@@ -17,6 +17,12 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   devDeps: [
     'esbuild',
+    '@aws-cdk/integ-tests-alpha@2.168.0-alpha.0',
+    '@aws-cdk/integ-runner@^2.168.0',
+    'cdk-nag@^2.34.0',
+  ],
+  peerDeps: [
+    'cdk-nag@^2.34.0',
   ],
   bundledDeps: ['axios'],
   // exclude lambda code in favour of custom esbuild compiling
