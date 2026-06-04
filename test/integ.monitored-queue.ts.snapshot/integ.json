@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "MonitoredQueueInteg/DefaultTest": {
+      "stacks": [
+        "IntegMonitoredQueueStack"
+      ],
+      "assertionStack": "MonitoredQueueInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "MonitoredQueueIntegDefaultTestDeployAssert10BC5308"
+    }
+  }
+}

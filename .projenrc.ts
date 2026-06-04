@@ -17,6 +17,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   devDeps: [
     'esbuild',
+    '@aws-cdk/integ-tests-alpha@2.168.0-alpha.0',
+    '@aws-cdk/integ-runner@^2.168.0',
   ],
   bundledDeps: ['axios'],
   // exclude lambda code in favour of custom esbuild compiling
@@ -28,4 +30,12 @@ project.npmignore!.exclude('playground/');
 project.gitignore!.exclude('playground/');
 project.gitignore!.exclude('.agents/', 'plans/');
 project.compileTask.exec('ts-node ./scripts/buildLambdas.ts');
+
+project.addTask('integ', {
+  exec: 'integ-runner',
+});
+project.addTask('integ:update', {
+  exec: 'integ-runner --update-on-failed',
+});
+
 project.synth();

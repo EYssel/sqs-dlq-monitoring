@@ -14,6 +14,8 @@
     "default": "projen default",
     "eject": "projen eject",
     "eslint": "projen eslint",
+    "integ": "projen integ",
+    "integ:update": "projen integ:update",
     "package": "projen package",
     "package-all": "projen package-all",
     "package:js": "projen package:js",
@@ -34,6 +36,8 @@
     "organization": false
   },
   "devDependencies": {
+    "@aws-cdk/integ-runner": "^2.168.0",
+    "@aws-cdk/integ-tests-alpha": "2.168.0-alpha.0",
     "@stylistic/eslint-plugin": "^2",
     "@types/jest": "^29.5.14",
     "@types/node": "^18",
