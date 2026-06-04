@@ -422,4 +422,29 @@ describe('MonitoredQueue', () => {
       expect(template.toJSON()).toMatchSnapshot();
     });
   });
+
+  describe('should merge custom alarmProps with defaults', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test', {
+      queueProps: {
+        queueName: 'test-queue',
+      },
+      alarmProps: {
+        alarmName: 'custom-alarm-name',
+        threshold: 10,
+      } as any,
+    });
+
+    const template = Template.fromStack(stack);
+
+    test('should override custom provided alarmProps and retain non-overridden defaults', () => {
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        AlarmName: 'custom-alarm-name',
+        Threshold: 10,
+        TreatMissingData: 'notBreaching',
+        EvaluationPeriods: 1,
+      });
+    });
+  });
 });
+
