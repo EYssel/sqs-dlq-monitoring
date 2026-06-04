@@ -1,5 +1,5 @@
-import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack } from 'aws-cdk-lib';
 import { MonitoredQueue } from '../src/monitoredQueue';
 
 const app = new App();
