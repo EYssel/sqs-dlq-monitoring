@@ -49,4 +49,6 @@ junit.xml
 .jsii
 tsconfig.json
 playground/
+.agents/
+plans/
 !/.projenrc.ts

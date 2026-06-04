@@ -26,5 +26,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
 project.npmignore!.exclude('scripts/');
 project.npmignore!.exclude('playground/');
 project.gitignore!.exclude('playground/');
+project.gitignore!.exclude('.agents/', 'plans/');
 project.compileTask.exec('ts-node ./scripts/buildLambdas.ts');
 project.synth();
