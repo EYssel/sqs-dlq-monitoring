@@ -1,69 +1,17 @@
-import * as path from 'path';
 import {
   Alarm,
   AlarmProps,
   TreatMissingData,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
-import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Topic, TopicProps } from 'aws-cdk-lib/aws-sns';
-import {
-  EmailSubscription,
-  LambdaSubscription,
-} from 'aws-cdk-lib/aws-sns-subscriptions';
 import { DeadLetterQueue, Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { IMessagingProvider, EmailProvider, SlackProvider } from './providers';
 
-export interface IMessagingProvider {
-  deployProvider(scope: Construct, topic: Topic): void;
-}
-
-export class SlackProvider implements IMessagingProvider {
-  /** Slack bot token for providing access to the Lambda function to write messages to Slack
-   * @required
-   */
-  readonly slackToken: string;
-
-  /** Slack channel to post messages to
-   * @required
-   */
-  readonly slackChannel: string;
-
-  /**
-   * Unique name or identifier for the slack provider.
-   * This allows multiple slack providers to be created for a single alarm.
-   */
-  readonly name: string;
-
-  constructor(slackToken: string, slackChannel: string, name: string) {
-    this.slackToken = slackToken;
-    this.slackChannel = slackChannel;
-    this.name = name;
-  }
-
-  deployProvider(scope: Construct, topic: Topic) {
-    addSlackNotificationDestination(
-      scope,
-      topic,
-      this.slackToken,
-      this.slackChannel,
-      this.name,
-    );
-  }
-}
-
-export class EmailProvider implements IMessagingProvider {
-  /** The emails to which the messages should be sent */
-  readonly emails: string[];
-
-  constructor(emails: string[]) {
-    this.emails = emails;
-  }
-
-  deployProvider(_scope: Construct, topic: Topic): void {
-    addEmailNotificationDestination(topic, this.emails);
-  }
-}
+// Re-export providers for 100% backward compatibility
+export { IMessagingProvider, EmailProvider, SlackProvider };
 
 export interface IMonitoredQueueProps {
   /**
@@ -120,6 +68,13 @@ export interface IMonitoredQueueProps {
    * This value is overriden if the `topic` property is provided.
    */
   readonly topicProps?: TopicProps;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs for the Slack Lambda.
+   * @default RetentionDays.ONE_WEEK
+   * @optional
+   */
+  readonly logRetentionDays?: RetentionDays;
 }
 
 export class MonitoredQueue extends Construct {
@@ -143,8 +98,16 @@ export class MonitoredQueue extends Construct {
    */
   public readonly alarm: Alarm;
 
+  /**
+   * The log retention days configured for the Slack Lambda
+   */
+  public readonly logRetentionDays?: RetentionDays;
+
   constructor(scope: Construct, id: string, props: IMonitoredQueueProps) {
     super(scope, id);
+
+    // Save log retention days to be accessible by providers during deployProvider()
+    this.logRetentionDays = props.logRetentionDays;
 
     const deadLetterQueue = props.queueProps.deadLetterQueue || {
       queue: new Queue(
@@ -209,32 +172,4 @@ export class MonitoredQueue extends Construct {
       messageProvider.deployProvider(this, topic);
     }
   }
-}
-
-function addEmailNotificationDestination(topic: Topic, emails: string[]) {
-  for (const email of emails) {
-    topic.addSubscription(new EmailSubscription(email));
-  }
-}
-
-function addSlackNotificationDestination(
-  scope: Construct,
-  topic: Topic,
-  slackToken: string,
-  slackChannel: string,
-  name: string,
-) {
-  const slackListener = new Function(scope, 'SlackListenerLambda' + name, {
-    runtime: Runtime.NODEJS_22_X,
-    architecture: Architecture.ARM_64,
-    code: Code.fromAsset(path.join(__dirname, '../lib/lambda/slackListener')),
-    handler: 'index.handler',
-    environment: {
-      SLACK_BOT_TOKEN: slackToken,
-      SLACK_CHANNEL: slackChannel,
-    },
-    logRetention: 7,
-  });
-
-  topic.addSubscription(new LambdaSubscription(slackListener));
 }

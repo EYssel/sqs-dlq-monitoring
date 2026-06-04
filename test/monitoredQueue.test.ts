@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { MonitoredQueue } from '../src/index';
@@ -350,7 +351,7 @@ describe('MonitoredQueue', () => {
       });
     });
 
-    template.resourceCountIs('AWS::Lambda::Function', 3);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
 
     test('should create a CloudWatch Alarm', () => {
       template.hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -367,7 +368,7 @@ describe('MonitoredQueue', () => {
       });
     });
 
-    template.resourceCountIs('AWS::SNS::Subscription', 2);
+    template.resourceCountIs('AWS::SNS::Subscription', 1);
 
     test('should match the snapshot', () => {
       expect(template.toJSON()).toMatchSnapshot();
@@ -406,7 +407,7 @@ describe('MonitoredQueue', () => {
       });
     });
 
-    template.resourceCountIs('AWS::Lambda::Function', 3);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
 
     test('should create a CloudWatch Alarm', () => {
       template.hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -416,7 +417,7 @@ describe('MonitoredQueue', () => {
       });
     });
 
-    template.resourceCountIs('AWS::SNS::Subscription', 3);
+    template.resourceCountIs('AWS::SNS::Subscription', 2);
 
     test('should match the snapshot', () => {
       expect(template.toJSON()).toMatchSnapshot();
@@ -443,6 +444,31 @@ describe('MonitoredQueue', () => {
         Threshold: 10,
         TreatMissingData: 'notBreaching',
         EvaluationPeriods: 1,
+      });
+    });
+  });
+
+  describe('should support custom log retention days and deduplicate slack lambda', () => {
+    const stack = new Stack();
+    new MonitoredQueue(stack, 'test-custom-retention', {
+      queueProps: {
+        queueName: 'test-custom-retention',
+      },
+      logRetentionDays: RetentionDays.TWO_WEEKS,
+      messagingProviders: [
+        new SlackProvider('token1', 'channel1', 'slack1'),
+        new SlackProvider('token2', 'channel2', 'slack2'),
+      ],
+    });
+    const template = Template.fromStack(stack);
+
+    test('should only synthesize a single Lambda function', () => {
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+    });
+
+    test('should configure the CloudWatch Log Group RetentionInDays to 14', () => {
+      template.hasResourceProperties('AWS::Logs::LogGroup', {
+        RetentionInDays: 14,
       });
     });
   });

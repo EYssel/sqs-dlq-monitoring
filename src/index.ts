@@ -1,2 +1,2 @@
-export { EmailProvider, IMessagingProvider, IMonitoredQueueProps, MonitoredQueue, SlackProvider } from './monitoredQueue';
-
+export { IMonitoredQueueProps, MonitoredQueue } from './monitoredQueue';
+export { EmailProvider, IMessagingProvider, SlackProvider } from './providers';
