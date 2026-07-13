@@ -3,9 +3,9 @@
 - [sqs-dlq-monitoring](#sqs-dlq-monitoring)
 - [Getting Started](#getting-started)
   - [Example](#example)
-    - [Install the package with npm:](#install-the-package-with-npm)
-    - [Install the package with yarn:](#install-the-package-with-yarn)
-    - [Import the construct into your stack:](#import-the-construct-into-your-stack)
+    - [Install the package with npm](#install-the-package-with-npm)
+    - [Install the package with yarn](#install-the-package-with-yarn)
+    - [Import the construct into your stack](#import-the-construct-into-your-stack)
 - [Why?](#why)
 - [API](#api)
   - [`queueProps`](#queueprops)
@@ -16,8 +16,10 @@
     - [1. `EmailProvider`](#1-emailprovider)
     - [2. `SlackProvider`](#2-slackprovider)
   - [`dlqProps`](#dlqprops)
+  - [`alarmProps`](#alarmprops)
   - [`topic`](#topic)
   - [`topicProps`](#topicprops)
+  - [`logRetentionDays`](#logretentiondays)
 - [Deployed Infrastructure](#deployed-infrastructure)
 - [Setting up Email notifications](#setting-up-email-notifications)
   - [`EmailProvider`](#emailprovider)
@@ -27,16 +29,17 @@
   - [`SlackProvider`](#slackprovider)
     - [`slackToken`](#slacktoken)
     - [`slackChannel`](#slackchannel)
+    - [`name`](#name)
   - [Example](#example-2)
 - [Contributing](#contributing)
-  - [How to get started with local development?](#how-to-get-started-with-local-development)
+  - [Getting Started with Local Development](#getting-started-with-local-development)
     - [Tips](#tips)
       - [Create a "Playground" environment](#create-a-playground-environment)
 - [Credits](#credits)
 
-This is an AWS CDK construct which creates an AWS Simple-Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ).
+This is an AWS CDK construct which creates an AWS Simple Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ).
 
-Based on the configuration, this so called `MonitoredQueue` construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold.
+Based on the configuration, this `MonitoredQueue` construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold.
 
 The following messaging locations are available:
 
@@ -49,19 +52,19 @@ The following messaging locations are available:
 
 ## Example
 
-Here is an example for how to use this construct in your AWS CDK TypeScript project.
+Here is an example of how to use this construct in your AWS CDK TypeScript project.
 
-After setting up your AWS CDK app.
+After setting up your AWS CDK app:
 
-### Install the package with npm:
+### Install the package with npm
 
 `npm install sqs-dlq-monitoring`
 
-### Install the package with yarn:
+### Install the package with yarn
 
 `yarn add sqs-dlq-monitoring`
 
-### Import the construct into your stack:
+### Import the construct into your stack
 
 ```ts
 export class ShowcaseStack extends cdk.Stack {
@@ -93,11 +96,9 @@ export class ShowcaseStack extends cdk.Stack {
 
 SQS is a common part of most AWS infrastructures, and it is recommended to deploy a DLQ alongside it to catch any failed messages.
 
-The problem is that a DLQ can only keep messages for a time of up to 14 days, and if this DLQ is not monitored, developers may not know that any messages have failed.
+By default, an SQS DLQ can retain messages for up to 14 days. If the DLQ is not actively monitored, developers might remain unaware of failed messages, which are eventually deleted at the end of the retention period.
 
-These messages would then be deleted at the end of the retention period.
-
-This package aims to solve this problem by granting developers an easy way to deploy a solution to monitor and notify them if messages have failed.
+This package solves this problem by providing an easy way to deploy a monitored queue that automatically triggers notifications when messages fail.
 
 Sources:
 
@@ -127,7 +128,7 @@ new MonitoredQueue(stack, 'ExampleQueue', {
       maxReceiveCount: 3,
     },
   },
-  messageProviders: [
+  messagingProviders: [
     ...
   ]
 });
@@ -135,11 +136,11 @@ new MonitoredQueue(stack, 'ExampleQueue', {
 
 ## `maxReceiveCount`
 
-The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
 
 ## `messageThreshold`
 
-The threshold for the amount of messages that are in the DLQ which trigger the alarm
+The threshold for the amount of messages that are in the DLQ which trigger the alarm.
 
 ## `evaluationThreshold`
 
@@ -153,39 +154,47 @@ The options are listed below:
 
 ### 1. `EmailProvider`
 
-Sets up Email Messaging
+Sets up Email Messaging.
 
-For info on setting this up see:
+For info on setting this up, see:
 
 [Setting Up Email Notifications](#setting-up-email-notifications)
 
 ### 2. `SlackProvider`
 
-Sets up Slack Messaging
+Sets up Slack Messaging.
 
-For info on setting this up see:
+For info on setting this up, see:
 
 [Setting Up Slack Notifications](#setting-up-slack-notifications)
 
 ## `dlqProps`
 
-The standard SQS Queue Props which can be used to customise the deployed DLQ. 
-The value of this property will be overriden if the `queueProps.deadLetterQueue` is provided.
+The standard SQS Queue Props which can be used to customize the deployed DLQ. 
+The value of this property will be overridden if the `queueProps.deadLetterQueue` is provided.
+
+## `alarmProps`
+
+The standard CloudWatch Alarm properties which can be used to customize the deployed CloudWatch alarm.
 
 ## `topic`
 
-A custom topic which allows the user to pass through a custom topic.
+A pre-existing SNS Topic to use instead of creating a new one.
 
 ## `topicProps`
 
-The standard SNS Topic properties which can be used to customise the deployed topic.
-This value is overriden if the `topic` property is provided.
+The standard SNS Topic properties which can be used to customize the deployed topic.
+This value is overridden if the `topic` property is provided.
+
+## `logRetentionDays`
+
+The number of days log events are kept in CloudWatch Logs for the Slack Lambda function.
 
 ---
 
 # Deployed Infrastructure
 
-To support this construct the following infrastucture is deployed:
+To support this construct, the following infrastructure is deployed:
 
 - SQS Queue
 - SQS DLQ
@@ -201,23 +210,23 @@ A representation of the infrastructure can be seen below.
 
 # Setting up Email notifications
 
-When using the construct the following parameter is used for setting up a Email notifications:
+To set up email notifications, use the following parameter when initializing the construct:
 
 - [`messagingProviders`](#messagingproviders)
 
-The `messagingProviders` parameter requires a list of messaging providers of which one option is `EmailProvider`
+This parameter accepts a list of messaging providers, one of which is `EmailProvider`.
 
 ## `EmailProvider`
 
-The email provider has a single parameter:
+The `EmailProvider` constructor accepts a single parameter:
 
 `emails`
 
-Which expects a list of email addresses.
+which expects an array of email addresses.
 
-These email addresses will be sent a "Subscription" email from AWS, which needs to be accepted.
+Each recipient will receive an AWS SNS subscription confirmation email that must be accepted to start receiving notifications.
 
-Be sure to check your spam folder
+Be sure to check your spam folder if the email does not arrive.
 
 ## Example
 
@@ -235,29 +244,29 @@ Be sure to check your spam folder
 
 # Setting up Slack notifications
 
-When using the construct the following parameter is used for setting up a Email notifications:
+To set up Slack notifications, use the following parameter when initializing the construct:
 
 - [`messagingProviders`](#messagingproviders)
 
-The `messagingProviders` parameter requires a list of messaging providers of which one option is `SlackProvider`
+This parameter accepts a list of messaging providers, one of which is `SlackProvider`.
 
-First you need to setup a Slack App to obtain the necessary information:
+First, you need to set up a Slack App to obtain the necessary credentials:
 
 ## Slack App
 
-To setup this feature, a Slack App needs to be created and added to the desired workspace which will provide the method for generating a token and providing the correct access for the Lambda Function.
+To set up this feature, a Slack App needs to be created and added to the desired workspace to generate a token and provide the correct access for the Lambda function.
 
-A guide to do so can be found here https://api.slack.com/start/quickstart
+A guide to do so can be found in the [Slack documentation](https://api.slack.com/start/quickstart).
 
 ## `SlackProvider`
 
-The `SlackProvider` contains parameters for setting up Slack Messaging.
+The `SlackProvider` constructor accepts parameters for setting up Slack messaging.
 
 ### `slackToken`
 
-A Bot User token which will be provided to the `slackToken` parameter.
+The Bot User OAuth Token generated for your Slack App.
 
-The token requires the following scopes:
+The token requires the following OAuth scopes:
 
 - `chat.write`
 - `chat.write.public`
@@ -266,11 +275,17 @@ See [Slack App](#slack-app)
 
 ### `slackChannel`
 
-A channel that the bot will send messages to.
+The channel ID that the bot will send messages to.
 
-The channel ID needs to be used as the `slackChannel` parameter.
+See [Slack App](#slack-app)
 
-After being set up successfully you will receive messages that look like this when the alarm is triggered:
+### `name`
+
+A unique name or identifier for this Slack provider. This allows you to configure multiple Slack providers for a single monitored queue.
+
+---
+
+After being set up successfully, you will receive messages like the following when the alarm is triggered:
 
 ![Slack Example Messages](./documentation/slack-messages-example.png)
 
@@ -293,35 +308,37 @@ See [Slack App](#slack-app)
 
 # Contributing
 
-Feel free to create Issues and PR's if you want to contribute to the project!
+Feel free to create issues and PRs if you want to contribute to the project!
 
-## How to get started with local development?
+## Getting Started with Local Development
 
-1. Clone the project onto your local machine.
+1. Ensure you have **Node.js v22** (LTS) installed. You can verify with `node --version`.
 
-2. Run `yarn` to install dependencies
+2. Clone the project onto your local machine.
 
-3. Run `yarn build` to compile the project
+3. Run `yarn` to install dependencies.
 
-4. Implement your changes
+4. Run `yarn build` to compile the project.
 
-5. Ensure your changes are tested with `yarn test`
+5. Implement your changes.
 
-6. Create an Issue and associate your PR with the issue
+6. Ensure your changes are tested with `yarn test`.
 
-7. Be sure to document your changes appropriately
+7. Create an issue and associate your PR with the issue.
+
+8. Be sure to document your changes appropriately.
 
 ### Tips
 
 #### Create a "Playground" environment
 
-1. Create a folder in the root called `playground`
+1. Create a folder in the root called `playground`.
 
-2. Initialise your preffered CDK app
+2. Initialize your preferred CDK app.
 
-3. Import the package from the `lib/` path in the root.
+3. Import the construct directly from the relative `lib/` directory in the root.
 
-4. Deploy to your personal AWS account to test
+4. Deploy to your personal AWS account to test.
 
 # Credits
 
