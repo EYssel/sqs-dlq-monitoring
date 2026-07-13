@@ -297,19 +297,21 @@ Feel free to create Issues and PR's if you want to contribute to the project!
 
 ## How to get started with local development?
 
-1. Clone the project onto your local machine.
+1. Ensure you have **Node.js v22** (LTS) installed. You can verify with `node --version`.
 
-2. Run `yarn` to install dependencies
+2. Clone the project onto your local machine.
 
-3. Run `yarn build` to compile the project
+3. Run `yarn` to install dependencies
 
-4. Implement your changes
+4. Run `yarn build` to compile the project
 
-5. Ensure your changes are tested with `yarn test`
+5. Implement your changes
 
-6. Create an Issue and associate your PR with the issue
+6. Ensure your changes are tested with `yarn test`
 
-7. Be sure to document your changes appropriately
+7. Create an Issue and associate your PR with the issue
+
+8. Be sure to document your changes appropriately
 
 ### Tips
 

@@ -1,14 +1,16 @@
-import { awscdk } from 'projen';
+import { awscdk, javascript } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Estian Yssel',
   authorAddress: 'estianyssel@gmail.com',
   description: 'An AWS CDK construct which creates an AWS Simple-Queue Service (SQS) queue with an appropriately monitored Dead-Letter Queue (DLQ). This so called MonitoredQueue construct will send messages to the specified locations to notify you if messages in the DLQ cross a certain threshold',
   cdkVersion: '2.168.0',
   defaultReleaseBranch: 'master',
-  jsiiVersion: '~5.3.8',
+  jsiiVersion: '~5.9.0',
   name: 'sqs-dlq-monitoring',
+  packageManager: javascript.NodePackageManager.YARN_CLASSIC,
   projenrcTs: true,
   repositoryUrl: 'https://github.com/EYssel/sqs-dlq-monitoring.git',
+  workflowNodeVersion: '22.x',
   docgen: false,
   jestOptions: {
     jestConfig: {
