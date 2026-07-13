@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: 22.x
           package-manager-cache: false
       - name: Install dependencies
         run: yarn install --check-files
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: 22.x
           package-manager-cache: false
       - name: Download build artifacts
         uses: actions/download-artifact@v8
